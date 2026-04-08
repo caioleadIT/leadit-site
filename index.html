@@ -178,12 +178,26 @@ textarea.fi{resize:vertical;}
 
 <div class="mo" id="mPag">
   <div class="md">
-    <div class="mdt">Confirmar compra de créditos</div>
-    <div class="mds">Simulação de pagamento — em breve integrado ao PIX.</div>
-    <div class="fg"><label class="fl">Forma de pagamento</label>
-    <select class="fi" id="fPag"><option>PIX (liberação imediata)</option><option>Boleto bancário</option><option>Cartão de crédito</option></select></div>
-    <div id="mRes" style="background:var(--off);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--muted);line-height:1.8;"></div>
-    <div class="mda"><button class="bc" onclick="FM('mPag')">Cancelar</button><button class="bs" id="bCC" onclick="confirmarCompra()">✓ Confirmar pagamento</button></div>
+    <div class="mdt">Pagar com PIX</div>
+    <div class="mds" id="mPagSub">Preencha seu CPF para gerar o QR Code.</div>
+    <div id="mPagForm">
+      <div class="fg"><label class="fl">CPF (somente números)</label>
+      <input type="text" class="fi" id="fCPF" placeholder="00000000000" maxlength="11"></div>
+      <div id="mRes" style="background:var(--off);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;"></div>
+      <div class="mda"><button class="bc" onclick="FM('mPag')">Cancelar</button><button class="bs" id="bCC" onclick="confirmarCompra()">Gerar QR Code PIX</button></div>
+    </div>
+    <div id="mPagQR" style="display:none;text-align:center;">
+      <div style="background:#EAF3DE;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#27500A;">
+        ✓ PIX gerado! Escaneie o QR Code abaixo ou copie o código.
+      </div>
+      <img id="qrImg" src="" alt="QR Code PIX" style="width:220px;height:220px;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;">
+      <div style="margin-bottom:8px;">
+        <textarea id="qrCode" class="fi" rows="3" readonly style="font-size:11px;font-family:monospace;cursor:pointer;" onclick="copiarPix()"></textarea>
+      </div>
+      <button class="bs" style="width:100%;margin-bottom:8px;" onclick="copiarPix()">📋 Copiar código PIX</button>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Após pagar, os créditos serão liberados automaticamente em até 1 minuto.</div>
+      <button class="bc" style="width:100%;" onclick="FM('mPag')">Fechar</button>
+    </div>
   </div>
 </div>
 
@@ -396,26 +410,59 @@ function abrirPag(){
 }
 async function confirmarCompra(){
   if(PS===null){toast('Selecione um pacote.','error');return;}
+  const cpf=document.getElementById('fCPF').value.replace(/\D/g,'');
+  if(cpf.length!==11){toast('Informe um CPF válido com 11 dígitos.','error');return;}
   const b=document.getElementById('bCC');
   b.disabled=true;b.textContent='Gerando PIX...';
   try{
     const resp=await fetch('/.netlify/functions/criar-pagamento',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({pacote_index:PS,cliente_id:CU.id,cliente_email:CU.email})
+      body:JSON.stringify({pacote_index:PS,cliente_id:CU.id,cliente_email:CU.email,cliente_cpf:cpf})
     });
     const data=await resp.json();
-    if(data.init_point){
-      FM('mPag');
-      window.location.href=data.init_point;
+    if(data.qr_code){
+      document.getElementById('mPagForm').style.display='none';
+      document.getElementById('mPagQR').style.display='block';
+      document.getElementById('mPagSub').textContent='PIX gerado com sucesso!';
+      document.getElementById('qrCode').value=data.qr_code;
+      if(data.qr_code_base64){
+        document.getElementById('qrImg').src='data:image/png;base64,'+data.qr_code_base64;
+      }
+      iniciarVerificacaoPagamento(data.payment_id,PS);
     }else{
-      toast('Erro ao gerar pagamento.','error');
-      b.disabled=false;b.textContent='✓ Confirmar pagamento';
+      toast(data.erro||'Erro ao gerar PIX.','error');
+      b.disabled=false;b.textContent='Gerar QR Code PIX';
     }
   }catch(e){
     toast('Erro de conexão.','error');
-    b.disabled=false;b.textContent='✓ Confirmar pagamento';
+    b.disabled=false;b.textContent='Gerar QR Code PIX';
   }
+}
+function copiarPix(){
+  const el=document.getElementById('qrCode');
+  el.select();document.execCommand('copy');
+  toast('Código PIX copiado!','success');
+}
+function iniciarVerificacaoPagamento(paymentId,pacoteIdx){
+  const intervalo=setInterval(async()=>{
+    try{
+      const r=await fetch(`/.netlify/functions/verificar-pagamento?id=${paymentId}`);
+      const d=await r.json();
+      if(d.status==='approved'){
+        clearInterval(intervalo);
+        FM('mPag');
+        document.getElementById('mPagForm').style.display='block';
+        document.getElementById('mPagQR').style.display='none';
+        document.getElementById('fCPF').value='';
+        const p=PACOTES[pacoteIdx];
+        CP.creditos=(CP.creditos||0)+p.msgs;
+        toast('✓ Pagamento aprovado! '+p.msgs.toLocaleString('pt-BR')+' créditos adicionados.','success');
+        PS=null;rGrid();loadC();
+      }
+    }catch(e){}
+  },5000);
+  setTimeout(()=>clearInterval(intervalo),600000);
 }
 async function confirmarCompraANTIGA_DESATIVADA(){
   const b=document.getElementById('bCC');b.disabled=true;b.textContent='Processando...';
