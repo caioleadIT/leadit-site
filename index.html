@@ -5,7 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lead IT — Plataforma de Disparos</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// Verificar retorno de pagamento aprovado
+(async function(){
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('pagamento')==='sucesso'){
+    const cid=p.get('cliente'),pi=parseInt(p.get('pacote'));
+    if(cid&&pi>=0){
+      const PKTS=[15000,30000,50000];
+      const msgs=PKTS[pi]||0;
+      if(msgs>0){
+        const{data:pf}=await sb.from('perfis').select('creditos').eq('id',cid).single();
+        if(pf){
+          await sb.from('perfis').update({creditos:(pf.creditos||0)+msgs}).eq('id',cid);
+          await sb.from('transacoes').insert({cliente_id:cid,quantidade:msgs,descricao:'Pagamento aprovado via MP'});
+        }
+      }
+    }
+    window.history.replaceState({},'','/');
+    toast('✓ Pagamento aprovado! Créditos adicionados.','success');
+  }
+  if(p.get('pagamento')==='erro') toast('Pagamento não concluído.','error');
+})();
+</script>
 <style>
 :root{--teal:#028090;--teal-d:#013A45;--teal-l:#E1F5F8;--green:#02A87A;--green-d:#017055;--green-l:#D4F0E8;--blue:#1A4FA0;--blue-l:#E8F0FF;--off:#F6FAFB;--border:#D0E8EC;--text:#0D2B35;--muted:#5A7B85;--danger:#C0392B;--amber:#E67E22;--amber-l:#FEF5E7;--radius:12px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -293,7 +315,7 @@ textarea.fi{resize:vertical;}
 
 <script>
 const SB_URL='https://taojjnqlggdfvhaetpdg.supabase.co';
-const SB_KEY='sb_publishable_MpVGkPUo3AIWSAweJ5M0rA_dbfru191';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhb2pqbnFsZ2dkZnZoYWV0cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NTE1NTYsImV4cCI6MjA5MTIyNzU1Nn0.jgBi-yU-wU3btgJPptVKt7x8xla7jl2c-_GE2WAV6vI';
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const PKT=[{msgs:15000,preco:6750,label:'15.000 msgs',pop:false},{msgs:30000,preco:13500,label:'30.000 msgs',pop:true},{msgs:50000,preco:22500,label:'50.000 msgs',pop:false}];
 const SL={aguardando:'Aguardando',disparando:'Em disparo',disparado:'Disparado'};
@@ -373,9 +395,9 @@ function abrirPag(){
   OM('mPag');
 }
 async function confirmarCompra(){
-  // Redireciona para pagamento real no Mercado Pago
   if(PS===null){toast('Selecione um pacote.','error');return;}
-  const b=document.getElementById('bCC');b.disabled=true;b.textContent='Gerando PIX...';
+  const b=document.getElementById('bCC');
+  b.disabled=true;b.textContent='Gerando PIX...';
   try{
     const resp=await fetch('/.netlify/functions/criar-pagamento',{
       method:'POST',
@@ -386,16 +408,16 @@ async function confirmarCompra(){
     if(data.init_point){
       FM('mPag');
       window.location.href=data.init_point;
-    } else {
-      toast('Erro ao gerar pagamento. Tente novamente.','error');
+    }else{
+      toast('Erro ao gerar pagamento.','error');
       b.disabled=false;b.textContent='✓ Confirmar pagamento';
     }
   }catch(e){
-    toast('Erro de conexão. Tente novamente.','error');
+    toast('Erro de conexão.','error');
     b.disabled=false;b.textContent='✓ Confirmar pagamento';
   }
-  return; // fim pagamento real — código abaixo não executa
-  // SIMULAÇÃO (desativada):
+}
+async function confirmarCompraANTIGA_DESATIVADA(){
   const b=document.getElementById('bCC');b.disabled=true;b.textContent='Processando...';
   const p=PKT[PS],nc=(CP.creditos||0)+p.msgs;
   const{error:e1}=await sb.from('perfis').update({creditos:nc}).eq('id',CU.id);
