@@ -2,13 +2,16 @@ const ACCESS_TOKEN = 'APP_USR-6143085886954634-040811-9e1e9d23877c55f3de855210a7
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
   try {
     const { pacote_index, cliente_id, cliente_email } = JSON.parse(event.body);
+
     const PACOTES = [
-      { msgs: 15000, preco: 6750,  label: '15.000 mensagens Lead IT' },
-      { msgs: 30000, preco: 13500, label: '30.000 mensagens Lead IT' },
-      { msgs: 50000, preco: 22500, label: '50.000 mensagens Lead IT' },
+      { msgs: 15000, preco: 6750,  label: '15.000 mensagens — Lead IT' },
+      { msgs: 30000, preco: 13500, label: '30.000 mensagens — Lead IT' },
+      { msgs: 50000, preco: 22500, label: '50.000 mensagens — Lead IT' },
     ];
+
     const pacote = PACOTES[pacote_index];
     if (!pacote) return { statusCode: 400, body: 'Pacote inválido' };
 
@@ -20,17 +23,6 @@ exports.handler = async (event) => {
         currency_id: 'BRL',
       }],
       payer: { email: cliente_email },
-      payment_methods: {
-        excluded_payment_types: [
-          { id: 'credit_card' },
-          { id: 'debit_card' },
-          { id: 'ticket' },
-          { id: 'atm' },
-          { id: 'prepaid_card' },
-        ],
-        default_payment_method_id: 'pix',
-        installments: 1,
-      },
       back_urls: {
         success: `https://leadit-company.netlify.app?pagamento=sucesso&cliente=${cliente_id}&pacote=${pacote_index}`,
         failure: `https://leadit-company.netlify.app?pagamento=erro`,
@@ -40,6 +32,8 @@ exports.handler = async (event) => {
       external_reference: `${cliente_id}__${pacote_index}__${Date.now()}`,
       statement_descriptor: 'LEADIT',
     };
+
+    console.log('Criando preferencia MP:', JSON.stringify({ pacote_index, cliente_id, preco: pacote.preco }));
 
     const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
@@ -51,14 +45,29 @@ exports.handler = async (event) => {
     });
 
     const data = await resp.json();
-    if (!resp.ok) return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ erro: data }) };
+    console.log('Resposta MP status:', resp.status, 'init_point:', data.init_point ? 'OK' : 'AUSENTE');
+
+    if (!resp.ok) {
+      console.error('Erro MP:', JSON.stringify(data));
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ erro: data })
+      };
+    }
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ init_point: data.init_point }),
     };
+
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ erro: err.message }) };
+    console.error('Excecao:', err.message);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ erro: err.message })
+    };
   }
 };
