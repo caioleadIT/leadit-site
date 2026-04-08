@@ -5,15 +5,32 @@ exports.handler = async (event) => {
   try {
     const { pacote_index, cliente_id, cliente_email } = JSON.parse(event.body);
     const PACOTES = [
-      { msgs: 15000, preco: 6750, label: '15.000 mensagens Lead IT' },
+      { msgs: 15000, preco: 6750,  label: '15.000 mensagens Lead IT' },
       { msgs: 30000, preco: 13500, label: '30.000 mensagens Lead IT' },
       { msgs: 50000, preco: 22500, label: '50.000 mensagens Lead IT' },
     ];
     const pacote = PACOTES[pacote_index];
     if (!pacote) return { statusCode: 400, body: 'Pacote inválido' };
+
     const body = {
-      items: [{ title: pacote.label, quantity: 1, unit_price: pacote.preco, currency_id: 'BRL' }],
+      items: [{
+        title: pacote.label,
+        quantity: 1,
+        unit_price: pacote.preco,
+        currency_id: 'BRL',
+      }],
       payer: { email: cliente_email },
+      payment_methods: {
+        excluded_payment_types: [
+          { id: 'credit_card' },
+          { id: 'debit_card' },
+          { id: 'ticket' },
+          { id: 'atm' },
+          { id: 'prepaid_card' },
+        ],
+        default_payment_method_id: 'pix',
+        installments: 1,
+      },
       back_urls: {
         success: `https://leadit-company.netlify.app?pagamento=sucesso&cliente=${cliente_id}&pacote=${pacote_index}`,
         failure: `https://leadit-company.netlify.app?pagamento=erro`,
@@ -23,14 +40,24 @@ exports.handler = async (event) => {
       external_reference: `${cliente_id}__${pacote_index}__${Date.now()}`,
       statement_descriptor: 'LEADIT',
     };
+
     const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ACCESS_TOKEN}` },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+      },
       body: JSON.stringify(body),
     });
+
     const data = await resp.json();
     if (!resp.ok) return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ erro: data }) };
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ init_point: data.init_point }) };
+
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ init_point: data.init_point }),
+    };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ erro: err.message }) };
   }
