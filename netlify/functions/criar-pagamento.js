@@ -23,6 +23,17 @@ exports.handler = async (event) => {
         currency_id: 'BRL',
       }],
       payer: { email: cliente_email },
+      payment_methods: {
+        excluded_payment_types: [
+          { id: 'credit_card' },
+          { id: 'debit_card' },
+          { id: 'ticket' },
+          { id: 'atm' },
+          { id: 'prepaid_card' },
+        ],
+        default_payment_method_id: 'pix',
+        installments: 1,
+      },
       back_urls: {
         success: `https://leadit-company.netlify.app?pagamento=sucesso&cliente=${cliente_id}&pacote=${pacote_index}`,
         failure: `https://leadit-company.netlify.app?pagamento=erro`,
@@ -32,8 +43,6 @@ exports.handler = async (event) => {
       external_reference: `${cliente_id}__${pacote_index}__${Date.now()}`,
       statement_descriptor: 'LEADIT',
     };
-
-    console.log('Criando preferencia MP:', JSON.stringify({ pacote_index, cliente_id, preco: pacote.preco }));
 
     const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
@@ -45,7 +54,6 @@ exports.handler = async (event) => {
     });
 
     const data = await resp.json();
-    console.log('Resposta MP status:', resp.status, 'init_point:', data.init_point ? 'OK' : 'AUSENTE');
 
     if (!resp.ok) {
       console.error('Erro MP:', JSON.stringify(data));
