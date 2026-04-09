@@ -529,13 +529,18 @@ async function envCamp(){
   if((CP?.creditos||0)<MIN_CAMP){toast(`Mínimo de ${MIN_CAMP.toLocaleString('pt-BR')} créditos necessários.`,'er2');return;}
   const b=document.getElementById('bEC');b.disabled=true;b.textContent='⏳ Enviando...';
 
+  // Função para limpar nome do arquivo
+  function nomeSeguro(nome){
+    return nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+  }
+
   // Upload imagem
-  const nImg=`imagens/${CU.id}/${Date.now()}_${IMG.name}`;
+  const nImg=`imagens/${CU.id}/${Date.now()}_${nomeSeguro(IMG.name)}`;
   const{data:imgData,error:imgErr}=await sb.storage.from('listas').upload(nImg,IMG);
   if(imgErr){toast('Erro ao enviar imagem.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
 
   // Upload lista
-  const nArq=`${CU.id}/${Date.now()}_${ARQ.name}`;
+  const nArq=`${CU.id}/${Date.now()}_${nomeSeguro(ARQ.name)}`;
   const{data:arqData,error:arqErr}=await sb.storage.from('listas').upload(nArq,ARQ);
   if(arqErr){toast('Erro ao enviar lista.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
 
