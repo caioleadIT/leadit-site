@@ -668,9 +668,10 @@ async function confDis(){
   // Atualizar campanha
   await sb.from('campanhas').update({status:'disparado',entregues,quantidade:entregues,observacao:obs}).eq('id',disId);
 
-  // Descontar créditos do cliente com base nas mensagens entregues
-  const h={'apikey':SBK,'Authorization':`Bearer ${SBK}`,'Content-Type':'application/json'};
-  const pr=await fetch(`${SBU}/rest/v1/perfis?id=eq.${disCid}&select=creditos,nome`,{headers:h});
+  // Descontar créditos usando service role key (permissão total)
+  const SRK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhb2pqbnFsZ2dkZnZoYWV0cGRnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTY1MTU1NiwiZXhwIjoyMDkxMjI3NTU2fQ.nzB1GTWpduZ8fiwWH9_yexhIbfqCqzxl4ZOIkZbviRg';
+  const h={'apikey':SRK,'Authorization':`Bearer ${SRK}`,'Content-Type':'application/json'};
+  const pr=await fetch(`${SBU}/rest/v1/perfis?id=eq.${disCid}&select=creditos`,{headers:h});
   const pf=await pr.json();
   const atual=pf[0]?.creditos||0;
   const novo=Math.max(0,atual-entregues);
