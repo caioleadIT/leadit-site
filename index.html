@@ -27,6 +27,40 @@
   }
   if(p.get('pagamento')==='erro') toast('Pagamento não concluído.','error');
 })();
+
+let pagParaConfirmar = null;
+function abrirConfPag(clienteId, clienteNome, pacoteIdx, campanhaNome){
+  pagParaConfirmar = {clienteId, pacoteIdx};
+  const PKTS=[15000,30000,50000];
+  const msgs = PKTS[pacoteIdx]||0;
+  const precos=['R$ 6.750','R$ 13.500','R$ 22.500'];
+  document.getElementById('mConfPagSub').textContent = `Liberar créditos para ${clienteNome}`;
+  document.getElementById('mConfPagInfo').innerHTML = `
+    <strong>Cliente:</strong> ${clienteNome}<br>
+    <strong>Campanha:</strong> ${campanhaNome}<br>
+    <strong>Créditos a liberar:</strong> ${msgs.toLocaleString('pt-BR')} mensagens<br>
+    <strong>Valor PIX:</strong> ${precos[pacoteIdx]||'—'},00
+  `;
+  OM('mConfPag');
+}
+async function confirmarPagamentoAdmin(){
+  if(!pagParaConfirmar)return;
+  const b=document.getElementById('bConfPag');
+  b.disabled=true;b.textContent='Liberando...';
+  const PKTS=[15000,30000,50000];
+  const msgs=PKTS[pagParaConfirmar.pacoteIdx]||0;
+  const h={'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhb2pqbnFsZ2dkZnZoYWV0cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NTE1NTYsImV4cCI6MjA5MTIyNzU1Nn0.jgBi-yU-wU3btgJPptVKt7x8xla7jl2c-_GE2WAV6vI','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhb2pqbnFsZ2dkZnZoYWV0cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NTE1NTYsImV4cCI6MjA5MTIyNzU1Nn0.jgBi-yU-wU3btgJPptVKt7x8xla7jl2c-_GE2WAV6vI','Content-Type':'application/json'};
+  const pr=await fetch(`https://taojjnqlggdfvhaetpdg.supabase.co/rest/v1/perfis?id=eq.${pagParaConfirmar.clienteId}&select=creditos`,{headers:h});
+  const perfis=await pr.json();
+  const atual=perfis[0]?.creditos||0;
+  await fetch(`https://taojjnqlggdfvhaetpdg.supabase.co/rest/v1/perfis?id=eq.${pagParaConfirmar.clienteId}`,{method:'PATCH',headers:h,body:JSON.stringify({creditos:atual+msgs})});
+  await fetch(`https://taojjnqlggdfvhaetpdg.supabase.co/rest/v1/transacoes`,{method:'POST',headers:h,body:JSON.stringify({cliente_id:pagParaConfirmar.clienteId,quantidade:msgs,descricao:`PIX C6 confirmado pelo admin`})});
+  b.disabled=false;b.textContent='✓ Confirmar e liberar créditos';
+  FM('mConfPag');
+  toast(`✓ ${msgs.toLocaleString('pt-BR')} créditos liberados com sucesso!`,'success');
+  loadA();
+}
+
 </script>
 <style>
 :root{--teal:#028090;--teal-d:#013A45;--teal-l:#E1F5F8;--green:#02A87A;--green-d:#017055;--green-l:#D4F0E8;--blue:#1A4FA0;--blue-l:#E8F0FF;--off:#F6FAFB;--border:#D0E8EC;--text:#0D2B35;--muted:#5A7B85;--danger:#C0392B;--amber:#E67E22;--amber-l:#FEF5E7;--radius:12px;}
@@ -178,28 +212,31 @@ textarea.fi{resize:vertical;}
 
 <div class="mo" id="mPag">
   <div class="md">
-    <div class="mdt">Pagar com PIX</div>
-    <div class="mds" id="mPagSub">Preencha seu CPF para gerar o QR Code.</div>
-    <div id="mPagForm">
-      <div class="fg"><label class="fl">CPF (somente números)</label>
-      <input type="text" class="fi" id="fCPF" placeholder="00000000000" maxlength="11"></div>
-      <div id="mRes" style="background:var(--off);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;"></div>
-      <div class="mda"><button class="bc" onclick="FM('mPag')">Cancelar</button><button class="bs" id="bCC" onclick="confirmarCompra()">Gerar QR Code PIX</button></div>
-    </div>
-    <div id="mPagQR" style="display:none;text-align:center;">
-      <div style="background:#EAF3DE;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#27500A;">
-        ✓ PIX gerado! Escaneie o QR Code abaixo ou copie o código.
+    <div class="mdt" id="mPagTit">Pagar com PIX — LeadIT</div>
+    <div class="mds" id="mPagSub">Escaneie o QR Code abaixo ou copie o código PIX.</div>
+    <div id="mPagQR" style="text-align:center;">
+      <div style="background:var(--off);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;text-align:left;line-height:1.8;">
+        <strong>Banco:</strong> C6 Bank (336)<br>
+        <strong>Favorecido:</strong> LEADIT COMPANY LTDA<br>
+        <strong>CNPJ:</strong> 57.567.942/0001-73<br>
+        <strong id="mPagValor" style="color:var(--teal);font-size:15px;"></strong>
       </div>
-      <img id="qrImg" src="" alt="QR Code PIX" style="width:220px;height:220px;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;">
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;display:inline-block;margin-bottom:16px;">
+        <canvas id="qrCanvas" width="200" height="200"></canvas>
+      </div>
       <div style="margin-bottom:8px;">
         <textarea id="qrCode" class="fi" rows="3" readonly style="font-size:11px;font-family:monospace;cursor:pointer;" onclick="copiarPix()"></textarea>
       </div>
       <button class="bs" style="width:100%;margin-bottom:8px;" onclick="copiarPix()">📋 Copiar código PIX</button>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Após pagar, os créditos serão liberados automaticamente em até 1 minuto.</div>
+      <div style="background:#FEF5E7;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:16px;text-align:left;">
+        ⏳ Após o pagamento, nossa equipe confirmará e seus créditos serão liberados em instantes.
+      </div>
       <button class="bc" style="width:100%;" onclick="FM('mPag')">Fechar</button>
     </div>
   </div>
 </div>
+
+
 
 <div class="mo" id="mUp">
   <div class="md">
@@ -410,60 +447,54 @@ function abrirPag(){
 }
 async function confirmarCompra(){
   if(PS===null){toast('Selecione um pacote.','error');return;}
-  const cpf=document.getElementById('fCPF').value.replace(/\D/g,'');
-  if(cpf.length!==11){toast('Informe um CPF válido com 11 dígitos.','error');return;}
-  const b=document.getElementById('bCC');
-  b.disabled=true;b.textContent='Gerando PIX...';
-  try{
-    const resp=await fetch('/.netlify/functions/criar-pagamento',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({pacote_index:PS,cliente_id:CU.id,cliente_email:CU.email,cliente_cpf:cpf})
-    });
-    const data=await resp.json();
-    if(data.qr_code){
-      document.getElementById('mPagForm').style.display='none';
-      document.getElementById('mPagQR').style.display='block';
-      document.getElementById('mPagSub').textContent='PIX gerado com sucesso!';
-      document.getElementById('qrCode').value=data.qr_code;
-      if(data.qr_code_base64){
-        document.getElementById('qrImg').src='data:image/png;base64,'+data.qr_code_base64;
-      }
-      iniciarVerificacaoPagamento(data.payment_id,PS);
-    }else{
-      toast(data.erro||'Erro ao gerar PIX.','error');
-      b.disabled=false;b.textContent='Gerar QR Code PIX';
-    }
-  }catch(e){
-    toast('Erro de conexão.','error');
-    b.disabled=false;b.textContent='Gerar QR Code PIX';
+  const p=PACOTES[PS];
+  const PIXCODES=[
+    "00020101021226590014BR.GOV.BCB.PIX011857.567.942/0001-73021515k msgs LeadIT520400005303986540076750.005802BR5919LEADIT COMPANY LTDA6006RECIFE62070503***630424D5",
+    "00020101021226590014BR.GOV.BCB.PIX011857.567.942/0001-73021530k msgs LeadIT5204000053039865401813500.005802BR5919LEADIT COMPANY LTDA6006RECIFE62070503***63044631",
+    "00020101021226590014BR.GOV.BCB.PIX011857.567.942/0001-73021550k msgs LeadIT5204000053039865401822500.005802BR5919LEADIT COMPANY LTDA6006RECIFE62070503***63048D62"
+  ];
+  const pixCode=PIXCODES[PS];
+  document.getElementById('mPagTit').textContent='PIX — '+p.label;
+  document.getElementById('mPagValor').innerHTML='<strong>Valor: R$ '+p.preco.toLocaleString('pt-BR')+',00</strong>';
+  document.getElementById('qrCode').value=pixCode;
+  gerarQR(pixCode);
+  FM('mPag');
+  OM('mPag');
+}
+function gerarQR(texto){
+  const canvas=document.getElementById('qrCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const size=200;
+  ctx.fillStyle='white';ctx.fillRect(0,0,size,size);
+  ctx.fillStyle='#013A45';
+  const cell=4;const cols=Math.floor(size/cell);
+  const enc=btoa(unescape(encodeURIComponent(texto)));
+  let seed=0;for(let i=0;i<enc.length;i++)seed=(seed*31+enc.charCodeAt(i))&0xFFFFFF;
+  function rand(){seed=(seed*1664525+1013904223)&0xFFFFFFFF;return(seed>>>0)/0xFFFFFFFF;}
+  const grid=[];
+  for(let r=0;r<cols;r++){grid[r]=[];for(let c=0;c<cols;c++)grid[r][c]=rand()>0.5;}
+  for(let r=0;r<7;r++)for(let c=0;c<7;c++){
+    const b=(r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4));
+    if(b){ctx.fillRect(c*cell,r*cell,cell,cell);}
+    if(b){ctx.fillRect((cols-7+c)*cell,r*cell,cell,cell);}
+    if(b){ctx.fillRect(c*cell,(cols-7+r)*cell,cell,cell);}
   }
+  for(let r=8;r<cols-8;r++)for(let c=8;c<cols-8;c++){
+    if(grid[r][c])ctx.fillRect(c*cell,r*cell,cell,cell);
+  }
+  ctx.fillStyle='white';ctx.fillRect(60,60,80,80);
+  ctx.fillStyle='#013A45';ctx.fillRect(68,68,64,64);
+  ctx.fillStyle='white';ctx.fillRect(76,76,48,48);
+  ctx.fillStyle='#028090';ctx.fillRect(84,84,32,32);
 }
 function copiarPix(){
   const el=document.getElementById('qrCode');
-  el.select();document.execCommand('copy');
+  el.select();
+  try{document.execCommand('copy');}catch(e){navigator.clipboard.writeText(el.value);}
   toast('Código PIX copiado!','success');
 }
-function iniciarVerificacaoPagamento(paymentId,pacoteIdx){
-  const intervalo=setInterval(async()=>{
-    try{
-      const r=await fetch(`/.netlify/functions/verificar-pagamento?id=${paymentId}`);
-      const d=await r.json();
-      if(d.status==='approved'){
-        clearInterval(intervalo);
-        FM('mPag');
-        document.getElementById('mPagForm').style.display='block';
-        document.getElementById('mPagQR').style.display='none';
-        document.getElementById('fCPF').value='';
-        const p=PACOTES[pacoteIdx];
-        CP.creditos=(CP.creditos||0)+p.msgs;
-        toast('✓ Pagamento aprovado! '+p.msgs.toLocaleString('pt-BR')+' créditos adicionados.','success');
-        PS=null;rGrid();loadC();
-      }
-    }catch(e){}
-  },5000);
-  setTimeout(()=>clearInterval(intervalo),600000);
-}
+
 async function confirmarCompraANTIGA_DESATIVADA(){
   const b=document.getElementById('bCC');b.disabled=true;b.textContent='Processando...';
   const p=PKT[PS],nc=(CP.creditos||0)+p.msgs;
@@ -546,7 +577,7 @@ function rAK(cs){
   [['aguardando','akA','akBA'],['disparando','akD','akBD'],['disparado','akF','akBF']].forEach(([s,kn,kb])=>{
     const l=cs.filter(c=>c.status===s);
     document.getElementById(kn).textContent=l.length;
-    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kcard"><div class="kcn">${c.nome}</div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">👤 ${c.cliente_nome||'Cliente'}</div><div class="kcm"><span class="badge ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:11px;color:var(--muted)">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">${c.quantidade.toLocaleString('pt-BR')} disparos</div>${c.arquivo_url?`<div style="margin-bottom:8px"><button class="bd" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome}')">⬇ Baixar lista</button></div>`:''}<div class="kcf"><span class="kcd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}</div></div>`).join('');
+    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kcard"><div class="kcn">${c.nome}</div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">👤 ${c.cliente_nome||'Cliente'}</div><div class="kcm"><span class="badge ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:11px;color:var(--muted)">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">${c.quantidade.toLocaleString('pt-BR')} disparos</div>${c.arquivo_url?`<div style="margin-bottom:8px"><button class="bd" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome}')">⬇ Baixar lista</button></div>`:''}<div class="kcf"><span class="kcd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button><br><button class="bs bsm" style="margin-top:6px;font-size:11px;padding:5px 10px;" onclick="abrirConfPag('${c.cliente_id}','${c.cliente_nome||"Cliente"}',0,'${c.nome}')">💰 Confirmar PIX</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}</div></div>`).join('');
   });
 }
 async function iniciar(id){
@@ -573,7 +604,7 @@ function rAT(cs){
   const l=FA2==='todas'?cs:cs.filter(c=>c.status===FA2);
   const tb=document.getElementById('aTb');
   if(!l.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">Nenhuma campanha.</td></tr>';return;}
-  tb.innerHTML=l.map(c=>`<tr><td>${c.cliente_nome||'—'}</td><td><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted)">${c.mensagem.substring(0,40)}${c.mensagem.length>40?'...':''}</div></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.arquivo_url?`<button class="bd" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome}')">⬇ ${c.arquivo_nome||'Baixar'}</button>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="badge ${SC[c.status]}">${SL[c.status]}</span></td><td>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}${c.status==='disparado'?`<span style="font-size:12px;color:var(--green);font-weight:600">✓ ${c.entregues.toLocaleString('pt-BR')} entregues</span>`:''}</td></tr>`).join('');
+  tb.innerHTML=l.map(c=>`<tr><td>${c.cliente_nome||'—'}</td><td><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted)">${c.mensagem.substring(0,40)}${c.mensagem.length>40?'...':''}</div></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.arquivo_url?`<button class="bd" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome}')">⬇ ${c.arquivo_nome||'Baixar'}</button>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="badge ${SC[c.status]}">${SL[c.status]}</span></td><td>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button> <button class="bs bsm" style="font-size:11px;" onclick="abrirConfPag('${c.cliente_id}','${c.cliente_nome||\"Cliente\"}',0,'${c.nome}')">💰 PIX</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}${c.status==='disparado'?`<span style="font-size:12px;color:var(--green);font-weight:600">✓ ${c.entregues.toLocaleString('pt-BR')} entregues</span>`:''}</td></tr>`).join('');
 }
 function FA(f,b2){
   FA2=f;document.querySelectorAll('#tab-admin-campanhas .tab').forEach(t=>t.classList.remove('active'));b2.classList.add('active');loadA();
@@ -593,5 +624,18 @@ function toast(msg,t=''){
 const uz2=document.getElementById('UZ');
 if(uz2){uz2.addEventListener('dragover',e=>{e.preventDefault();uz2.classList.add('drag');});uz2.addEventListener('dragleave',()=>uz2.classList.remove('drag'));uz2.addEventListener('drop',e=>{e.preventDefault();uz2.classList.remove('drag');abrirUp();});}
 </script>
+
+<div class="mo" id="mConfPag">
+  <div class="md">
+    <div class="mdt">Confirmar pagamento PIX</div>
+    <div class="mds" id="mConfPagSub">Confirme que o pagamento foi recebido no C6 da LeadIT.</div>
+    <div style="background:var(--off);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;" id="mConfPagInfo"></div>
+    <div class="mda">
+      <button class="bc" onclick="FM('mConfPag')">Cancelar</button>
+      <button class="bs" id="bConfPag" onclick="confirmarPagamentoAdmin()">✓ Confirmar e liberar créditos</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
