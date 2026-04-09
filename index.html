@@ -55,10 +55,7 @@ textarea{resize:vertical;}
 .tb-t{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--td);}
 .tb-a{display:flex;gap:8px;align-items:center;}
 .bd{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;}
-.bt{background:var(--tl);color:var(--td);}
-.bg{background:var(--gl);color:var(--gd);}
-.ba{background:var(--al);color:var(--am);}
-.bb{background:var(--bl);color:var(--b);}
+.bt{background:var(--tl);color:var(--td);}.bg{background:var(--gl);color:var(--gd);}.ba{background:var(--al);color:var(--am);}.bb{background:var(--bl);color:var(--b);}
 .pg{padding:28px;flex:1;}
 .mg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
 .mc2{background:#fff;border-radius:12px;padding:18px 20px;border:1px solid var(--br);position:relative;overflow:hidden;}
@@ -73,15 +70,6 @@ textarea{resize:vertical;}
 .cc:hover{border-color:var(--t);transform:translateY(-2px);}
 .cc.sel{border-color:var(--t);background:var(--tl);}
 .cc.pop::before{content:'Mais popular';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;}
-.cm{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--td);}
-.cml{font-size:11px;color:var(--mu);margin-bottom:12px;}
-.cp{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--t);}
-.cps{font-size:11px;color:var(--mu);}
-.ps{background:#fff;border:1px solid var(--br);border-radius:12px;padding:22px;margin-bottom:14px;}
-.pr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--br);font-size:14px;}
-.pr:last-child{border-bottom:none;}
-.pr .la{color:var(--mu);}.pr .va{color:var(--td);font-weight:500;}
-.pr.tot .va{color:var(--t);font-size:18px;font-family:'Syne',sans-serif;font-weight:700;}
 .cb{background:#fff;border:1px solid var(--br);border-radius:12px;padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;gap:18px;}
 .cbi{flex:1;}
 .cbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:6px;}
@@ -144,45 +132,55 @@ textarea{resize:vertical;}
 @keyframes ld{0%{width:0}100%{width:100%}}
 .bd2{padding:5px 11px;background:var(--bl);color:var(--b);border:1px solid var(--b);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:4px;text-decoration:none;}
 .bd2:hover{background:var(--b);color:#fff;}
+.pix-info{background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:16px;}
+.pix-chave{background:#fff;border:1.5px solid var(--t);border-radius:8px;padding:14px;text-align:center;margin-bottom:14px;}
+.tag-desc{background:#EAF3DE;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;color:#27500A;display:inline-block;margin-left:6px;}
 </style>
 </head>
 <body>
 <div class="ld" id="LD"><div class="ld-t">Lead<span>IT</span></div><div class="ld-b"><div class="ld-f"></div></div></div>
 <div class="tc" id="TC"></div>
 
-<!-- MODAL PAGAMENTO PIX C6 -->
+<!-- MODAL PAGAMENTO PIX -->
 <div class="mo" id="mPag">
   <div class="md">
-    <div class="mdt">Pagar com PIX — LeadIT</div>
-    <div class="mds">Escaneie o QR Code ou copie o código PIX abaixo.</div>
-    <div style="background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:16px;">
+    <div class="mdt">Pagamento via PIX — LeadIT</div>
+    <div class="mds" id="mPagSub">Realize o PIX para a conta abaixo e envie o comprovante.</div>
+    <div class="pix-info">
       <strong>Favorecido:</strong> LEADIT COMPANY LTDA<br>
       <strong>Banco:</strong> C6 Bank (336)<br>
       <strong>CNPJ:</strong> 57.567.942/0001-73<br>
       <strong id="pVal" style="color:var(--t);font-size:15px;"></strong>
     </div>
-    <div style="text-align:center;margin-bottom:14px;">
-      <canvas id="qrC" width="200" height="200" style="border:1px solid var(--br);border-radius:10px;"></canvas>
+    <div class="pix-chave">
+      <div style="font-size:11px;color:var(--mu);margin-bottom:6px;">CHAVE PIX (CNPJ)</div>
+      <div style="font-family:monospace;font-size:16px;font-weight:600;color:var(--td);margin-bottom:10px;">57.567.942/0001-73</div>
+      <button class="bs" style="width:100%;" onclick="cpChave()">📋 Copiar chave PIX</button>
     </div>
     <div class="fg">
-      <label>Código PIX (copiar e colar)</label>
-      <textarea id="qrT" rows="3" readonly style="font-size:11px;font-family:monospace;cursor:pointer;" onclick="cpPix()"></textarea>
+      <label>Comprovante de pagamento</label>
+      <input type="file" id="compArq" accept="image/*,.pdf" style="padding:10px;" onchange="pvComp(this)">
+      <div id="compPrev"></div>
     </div>
-    <button class="bs" style="width:100%;margin-bottom:8px;" onclick="cpPix()">📋 Copiar código PIX</button>
     <div style="background:var(--al);border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:14px;">
-      ⏳ Após o pagamento, nossa equipe confirmará e seus créditos serão liberados em instantes.
+      ⏳ Após enviar o comprovante, nossa equipe conferirá e liberará seus créditos em instantes.
     </div>
+    <button class="bs" id="bEnvComp" style="width:100%;margin-bottom:8px;" onclick="enviarComprovante()">📤 Enviar comprovante</button>
     <button class="bc" style="width:100%;" onclick="FM('mPag')">Fechar</button>
+    <div style="margin-top:12px;border-top:1px dashed var(--br);padding-top:12px;text-align:center;">
+      <div style="font-size:11px;color:var(--mu);margin-bottom:8px;">🧪 Modo de teste — remover antes do lançamento</div>
+      <button onclick="simularPagamento()" style="background:var(--am);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:12px;font-weight:600;cursor:pointer;width:100%;">⚡ Simular pagamento (teste)</button>
+    </div>
   </div>
 </div>
 
-<!-- MODAL UPLOAD -->
+<!-- MODAL UPLOAD CAMPANHA -->
 <div class="mo" id="mUp">
   <div class="md">
     <div class="mdt">Nova campanha de disparos</div>
     <div class="mds">Preencha os dados e faça o upload da lista de contatos.</div>
     <div class="fg"><label>Nome da campanha</label><input type="text" id="cNo" placeholder="Ex: Campanha INSS Maio 2025"></div>
-    <div class="fg"><label>Quantidade de disparos</label><input type="number" id="cQt" placeholder="Mínimo 10.000" min="10000"></div>
+    <div class="fg"><label>Quantidade de disparos</label><input type="number" id="cQt" placeholder="Mínimo 1 mensagem" min="1"></div>
     <div class="fg"><label>Mensagem</label><textarea id="cMs" rows="3" placeholder="Mensagem que será enviada..."></textarea></div>
     <div class="fg"><label>Lista de contatos (CSV, XLSX, TXT)</label>
     <input type="file" id="cAr" accept=".csv,.xlsx,.xls,.txt" style="padding:10px;" onchange="pvArq(this)">
@@ -191,7 +189,7 @@ textarea{resize:vertical;}
   </div>
 </div>
 
-<!-- MODAL MARCAR DISPARADO -->
+<!-- MODAL DISPARADO -->
 <div class="mo" id="mDis">
   <div class="md">
     <div class="mdt">Confirmar disparo realizado</div>
@@ -202,13 +200,15 @@ textarea{resize:vertical;}
   </div>
 </div>
 
-<!-- MODAL CONFIRMAR PIX (ADMIN) -->
-<div class="mo" id="mCP">
+<!-- MODAL LIBERAR CRÉDITOS (ADMIN) -->
+<div class="mo" id="mLib">
   <div class="md">
-    <div class="mdt">Confirmar recebimento PIX</div>
-    <div class="mds">Confirme que o PIX foi recebido na conta C6 da LeadIT.</div>
-    <div id="mCPI" style="background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:16px;"></div>
-    <div class="mda"><button class="bc" onclick="FM('mCP')">Cancelar</button><button class="bs" id="bCP" onclick="confPix()">✓ Confirmar e liberar créditos</button></div>
+    <div class="mdt">Liberar créditos — PIX recebido</div>
+    <div class="mds" id="mLibS">Confirme o recebimento no C6 e libere os créditos.</div>
+    <div id="mLibI" style="background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:14px;"></div>
+    <div id="mLibComp" style="margin-bottom:14px;"></div>
+    <div class="fg"><label>Quantidade de créditos a liberar</label><input type="number" id="libQtd" placeholder="Ex: 15000" min="1"></div>
+    <div class="mda"><button class="bc" onclick="FM('mLib')">Cancelar</button><button class="bs" id="bLib" onclick="liberarCreditos()">✓ Confirmar e liberar créditos</button></div>
   </div>
 </div>
 
@@ -254,21 +254,50 @@ textarea{resize:vertical;}
         </div>
       </div>
     </div>
+
+    <!-- COMPRAR CRÉDITOS -->
     <div id="tc-p" style="display:none">
       <div class="tb"><div class="tb-t">Comprar Créditos</div><div class="tb-a"><span class="bd bt" id="crBd">0 créditos</span></div></div>
       <div class="pg">
         <div class="st">Escolha o pacote</div>
-        <div class="cg" id="CG"></div>
-        <div class="st">Resumo</div>
-        <div class="ps">
-          <div class="pr"><span class="la">Pacote</span><span class="va" id="rPk">Selecione um pacote</span></div>
-          <div class="pr"><span class="la">Custo por mensagem</span><span class="va">R$ 0,45</span></div>
-          <div class="pr"><span class="la">Mensalidade</span><span class="va">R$ 800,00</span></div>
-          <div class="pr tot"><span class="la">Total</span><span class="va" id="rTt">—</span></div>
+        <div class="cg">
+          <!-- PACOTE 1: PERSONALIZADO -->
+          <div class="cc sel" id="pk0" onclick="selP(0)" style="grid-column:span 1">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--td);margin-bottom:4px;">Personalizado</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">R$ 0,45 por mensagem</div>
+            <div class="fg" style="text-align:left;margin-bottom:0" onclick="event.stopPropagation()">
+              <label>Quantidade de mensagens</label>
+              <input type="number" id="qtdPersonalizada" placeholder="Ex: 5000" min="1" style="margin-bottom:8px;" oninput="atualizarResPersonalizado()">
+              <div id="valorPersonalizado" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t);min-height:28px;"></div>
+            </div>
+          </div>
+          <!-- PACOTE 2: 50k -->
+          <div class="cc pop" id="pk1" onclick="selP(1)">
+            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--td);">50k</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">mensagens</div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t);">R$ 21.000</div>
+            <div style="font-size:11px;color:var(--mu);">R$ 0,42 por msg</div>
+            <div class="tag-desc">6% de desconto</div>
+          </div>
+          <!-- PACOTE 3: 100k -->
+          <div class="cc" id="pk2" onclick="selP(2)">
+            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--td);">100k</div>
+            <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">mensagens</div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t);">R$ 38.000</div>
+            <div style="font-size:11px;color:var(--mu);">R$ 0,38 por msg</div>
+            <div class="tag-desc">16% de desconto</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--br);border-radius:12px;padding:22px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--br);font-size:14px;"><span style="color:var(--mu);">Pacote</span><span id="rPk" style="font-weight:500;">Personalizado</span></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--br);font-size:14px;"><span style="color:var(--mu);">Mensagens</span><span id="rMs" style="font-weight:500;">—</span></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:14px;"><span style="color:var(--mu);">Total</span><span id="rTt" style="font-weight:700;color:var(--t);font-size:18px;font-family:'Syne',sans-serif;">—</span></div>
         </div>
         <button class="bs" onclick="abrirPag()">💳 Prosseguir para pagamento</button>
       </div>
     </div>
+
+    <!-- CAMPANHAS -->
     <div id="tc-k" style="display:none">
       <div class="tb"><div class="tb-t">Minhas Campanhas</div><div class="tb-a"><button class="bs" style="padding:9px 16px;font-size:13px;" onclick="abrirUp()">📤 Nova campanha</button></div></div>
       <div class="pg">
@@ -287,6 +316,7 @@ textarea{resize:vertical;}
     <div class="sb-s">Admin</div>
     <div class="si on" id="a1" onclick="ST('a','p',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Painel Admin</div>
     <div class="si" id="a2" onclick="ST('a','f',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Fila de Campanhas</div>
+    <div class="si" id="a3" onclick="ST('a','pg',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Pagamentos PIX</div>
     <div class="sb-f"><div class="sb-u"><div class="av" style="background:var(--g)">LI</div><div style="flex:1;min-width:0"><div class="un">Equipe Lead IT</div><div class="ur">Administrador</div></div><button class="sb-o" onclick="logout()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></button></div></div>
   </div>
   <div class="mc">
@@ -314,6 +344,12 @@ textarea{resize:vertical;}
         <div class="tw"><table class="dt"><thead><tr><th>Cliente</th><th>Campanha</th><th>Disparos</th><th>Arquivo</th><th>Data</th><th>Status</th><th>Ação</th></tr></thead><tbody id="aTb"></tbody></table></div>
       </div>
     </div>
+    <div id="ta-pg" style="display:none">
+      <div class="tb"><div class="tb-t">Pagamentos PIX — Comprovantes</div></div>
+      <div class="pg">
+        <div class="tw"><table class="dt"><thead><tr><th>Cliente</th><th>Valor PIX</th><th>Créditos</th><th>Comprovante</th><th>Data/Hora</th><th>Status</th><th>Ação</th></tr></thead><tbody id="pgTb"></tbody></table></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -321,11 +357,11 @@ textarea{resize:vertical;}
 const SBU='https://taojjnqlggdfvhaetpdg.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhb2pqbnFsZ2dkZnZoYWV0cGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NTE1NTYsImV4cCI6MjA5MTIyNzU1Nn0.jgBi-yU-wU3btgJPptVKt7x8xla7jl2c-_GE2WAV6vI';
 const sb=supabase.createClient(SBU,SBK);
-const PKT=[{msgs:15000,preco:6750,label:'15.000 msgs',pop:false},{msgs:30000,preco:13500,label:'30.000 msgs',pop:true},{msgs:50000,preco:22500,label:'50.000 msgs',pop:false}];
-const PIX=['00020101021226400014BR.GOV.BCB.PIX011857.567.942/0001-7352040000530398654076750.005802BR5919LEADIT COMPANY LTDA6006RECIFE62130509LeadIT15k630407CF','00020101021226400014BR.GOV.BCB.PIX011857.567.942/0001-73520400005303986540813500.005802BR5919LEADIT COMPANY LTDA6006RECIFE62130509LeadIT30k6304B032','00020101021226400014BR.GOV.BCB.PIX011857.567.942/0001-73520400005303986540822500.005802BR5919LEADIT COMPANY LTDA6006RECIFE62130509LeadIT50k63044846'];
 const SL={aguardando:'Aguardando',disparando:'Em disparo',disparado:'Disparado'};
 const SC={aguardando:'ba',disparando:'bb',disparado:'bg'};
-let CU=null,CP=null,PS=null,CPA=null,FA2='todas',ARQ=null,SI=null,pixPend=null;
+const PKTS=[{label:'Personalizado',preco_unit:0.45},{label:'50.000 msgs',msgs:50000,preco:21000},{label:'100.000 msgs',msgs:100000,preco:38000}];
+let CU=null,CP=null,PS=0,SI=null,ARQ=null,COMP=null,disId=null,libData=null,FA2='todas';
+let pagPend={msgs:0,valor:0,label:''};
 
 window.addEventListener('load',async()=>{
   try{
@@ -342,10 +378,7 @@ async function loadP(u){
   if(p.papel==='cliente')entC();else entA();
 }
 
-function show(id){
-  ['SL','SC','SA'].forEach(x=>document.getElementById(x).classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-}
+function show(id){['SL','SC','SA'].forEach(x=>document.getElementById(x).classList.remove('on'));document.getElementById(id).classList.add('on');}
 
 async function login(){
   const e=document.getElementById('lE').value.trim(),s=document.getElementById('lS').value;
@@ -359,8 +392,7 @@ document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&document.getElemen
 
 async function logout(){
   if(SI){clearInterval(SI);SI=null;}
-  await sb.auth.signOut();CU=null;CP=null;
-  show('SL');
+  await sb.auth.signOut();CU=null;CP=null;show('SL');
   document.getElementById('lE').value='';document.getElementById('lS').value='';
   document.getElementById('bL').textContent='Entrar →';document.getElementById('bL').disabled=false;
 }
@@ -370,72 +402,102 @@ function entC(){
   const n=CP.nome;
   document.getElementById('CNM').textContent=n;
   document.getElementById('CAV').textContent=n.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase();
-  rGr();loadC();SI=setInterval(()=>loadC(),4000);
+  loadC();SI=setInterval(()=>loadC(),4000);
 }
-function entA(){
-  show('SA');loadA();SI=setInterval(()=>loadA(),4000);
-}
+function entA(){show('SA');loadA();SI=setInterval(()=>loadA(),4000);}
 
 function ST(s,t,el){
-  const tabs=s==='c'?['tc-d','tc-p','tc-k']:['ta-p','ta-f'];
+  const tabs=s==='c'?['tc-d','tc-p','tc-k']:['ta-p','ta-f','ta-pg'];
   tabs.forEach(x=>document.getElementById(x).style.display='none');
-  const map={c:{d:'tc-d',p:'tc-p',k:'tc-k'},a:{p:'ta-p',f:'ta-f'}};
+  const map={c:{d:'tc-d',p:'tc-p',k:'tc-k'},a:{p:'ta-p',f:'ta-f',pg:'ta-pg'}};
   document.getElementById(map[s][t]).style.display='';
   document.querySelectorAll(`#S${s==='c'?'C':'A'} .si`).forEach(x=>x.classList.remove('on'));
   if(el)el.classList.add('on');
-  if(t==='p'&&s==='c'){rGr();document.getElementById('crBd').textContent=`${(CP?.creditos||0).toLocaleString('pt-BR')} créditos`;}
+  if(t==='p'&&s==='c')document.getElementById('crBd').textContent=`${(CP?.creditos||0).toLocaleString('pt-BR')} créditos`;
   if(t==='k')loadC();
   if(t==='p'&&s==='a')loadA();
   if(t==='f')loadA();
+  if(t==='pg')loadPagamentos();
 }
 
-function rGr(){
-  document.getElementById('CG').innerHTML=PKT.map((p,i)=>`<div class="cc${p.pop?' pop':''}${PS===i?' sel':''}" onclick="selP(${i})"><div class="cm">${(p.msgs/1000).toFixed(0)}k</div><div class="cml">mensagens</div><div class="cp">R$ ${p.preco.toLocaleString('pt-BR')}</div><div class="cps">R$ 0,45/msg</div></div>`).join('');
-}
+// PACOTES
 function selP(i){
-  PS=i;rGr();const p=PKT[i];
-  document.getElementById('rPk').textContent=p.label;
-  document.getElementById('rTt').textContent=`R$ ${(p.preco+800).toLocaleString('pt-BR')},00`;
+  PS=i;
+  ['pk0','pk1','pk2'].forEach((id,idx)=>{
+    document.getElementById(id).classList.toggle('sel',idx===i);
+  });
+  atualizarResumo();
+}
+
+function atualizarResPersonalizado(){
+  const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
+  const v=(q*0.45).toLocaleString('pt-BR',{minimumFractionDigits:2});
+  document.getElementById('valorPersonalizado').textContent=q>0?`R$ ${v}`:'';
+  if(PS===0)atualizarResumo();
+}
+
+function atualizarResumo(){
+  if(PS===0){
+    const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
+    const v=q*0.45;
+    document.getElementById('rPk').textContent='Personalizado';
+    document.getElementById('rMs').textContent=q>0?q.toLocaleString('pt-BR')+' mensagens':'—';
+    document.getElementById('rTt').textContent=q>0?`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`:'—';
+    pagPend={msgs:q,valor:v,label:'Personalizado'};
+  }else{
+    const p=PKTS[PS];
+    document.getElementById('rPk').textContent=p.label;
+    document.getElementById('rMs').textContent=p.msgs.toLocaleString('pt-BR')+' mensagens';
+    document.getElementById('rTt').textContent=`R$ ${p.preco.toLocaleString('pt-BR')}`;
+    pagPend={msgs:p.msgs,valor:p.preco,label:p.label};
+  }
 }
 
 function abrirPag(){
-  if(PS===null){toast('Selecione um pacote.','er2');return;}
-  const p=PKT[PS];
-  document.getElementById('pVal').innerHTML=`<strong>Valor: R$ ${p.preco.toLocaleString('pt-BR')},00</strong>`;
-  document.getElementById('qrT').value=PIX[PS];
-  gerarQR(PIX[PS]);
-  pixPend={pacoteIdx:PS,clienteId:CU.id,msgs:p.msgs};
+  if(PS===0){
+    const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
+    if(q<1){toast('Informe a quantidade de mensagens.','er2');return;}
+  }
+  atualizarResumo();
+  if(pagPend.msgs<1||pagPend.valor<1){toast('Selecione um pacote válido.','er2');return;}
+  document.getElementById('pVal').innerHTML=`<strong>Valor: R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong> — ${pagPend.msgs.toLocaleString('pt-BR')} mensagens`;
+  document.getElementById('compPrev').innerHTML='';
+  document.getElementById('compArq').value='';
+  COMP=null;
   OM('mPag');
 }
 
-function gerarQR(txt){
-  const cv=document.getElementById('qrC'),ctx=cv.getContext('2d');
-  const sz=200,cel=4,cols=Math.floor(sz/cel);
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,sz,sz);
-  ctx.fillStyle='#013A45';
-  let seed=0;for(let i=0;i<txt.length;i++)seed=(seed*31+txt.charCodeAt(i))&0xFFFFFF;
-  function rnd(){seed=(seed*1664525+1013904223)&0xFFFFFFFF;return(seed>>>0)/0xFFFFFFFF;}
-  const gr=[];for(let r=0;r<cols;r++){gr[r]=[];for(let c=0;c<cols;c++)gr[r][c]=rnd()>.5;}
-  function sqr(x,y){ctx.fillRect(x*cel,y*cel,cel,cel);}
-  for(let r=0;r<7;r++)for(let c=0;c<7;c++){
-    const b=r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4);
-    if(b){sqr(c,r);sqr(cols-7+c,r);sqr(c,cols-7+r);}
-  }
-  for(let r=8;r<cols-8;r++)for(let c=8;c<cols-8;c++)if(gr[r][c])sqr(c,r);
-  ctx.fillStyle='#fff';ctx.fillRect(60,60,80,80);
-  ctx.fillStyle='#013A45';ctx.fillRect(68,68,64,64);
-  ctx.fillStyle='#fff';ctx.fillRect(76,76,48,48);
-  ctx.fillStyle='#028090';ctx.fillRect(84,84,32,32);
+function cpChave(){
+  navigator.clipboard?.writeText('57.567.942/0001-73').then(()=>toast('Chave PIX copiada!','ok')).catch(()=>{
+    const el=document.createElement('input');el.value='57.567.942/0001-73';document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('Chave PIX copiada!','ok');
+  });
 }
 
-function cpPix(){
-  const el=document.getElementById('qrT');el.select();
-  try{document.execCommand('copy');}catch(e){navigator.clipboard?.writeText(el.value);}
-  toast('Código PIX copiado!','ok');
+function pvComp(inp){
+  COMP=inp.files[0];if(!COMP)return;
+  document.getElementById('compPrev').innerHTML=`<div class="fp"><span style="font-size:22px">📄</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--td)">${COMP.name}</div><div style="font-size:11px;color:var(--mu)">${(COMP.size/1024).toFixed(1)} KB</div></div><span style="color:var(--g);font-size:18px">✓</span></div>`;
 }
 
+async function enviarComprovante(){
+  if(!COMP){toast('Selecione o comprovante de pagamento.','er2');return;}
+  const b=document.getElementById('bEnvComp');b.disabled=true;b.textContent='⏳ Enviando...';
+  const nA=`comprovantes/${CU.id}/${Date.now()}_${COMP.name}`;
+  const{data:ud,error:ue}=await sb.storage.from('listas').upload(nA,COMP);
+  if(ue){toast('Erro ao enviar comprovante.','er2');b.disabled=false;b.textContent='📤 Enviar comprovante';return;}
+  const{error:pe}=await sb.from('transacoes').insert({
+    cliente_id:CU.id,
+    quantidade:pagPend.msgs,
+    descricao:`PIX pendente — ${pagPend.label} — R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})} — comprovante: ${ud.path}`
+  });
+  if(pe){toast('Erro ao registrar pagamento.','er2');b.disabled=false;b.textContent='📤 Enviar comprovante';return;}
+  b.disabled=false;b.textContent='📤 Enviar comprovante';
+  FM('mPag');
+  toast('✓ Comprovante enviado! Sua equipe irá conferir e liberar os créditos.','ok');
+}
+
+// UPLOAD CAMPANHA
 function abrirUp(){
-  if((CP?.creditos||0)<10000){toast('Você precisa de pelo menos 10.000 créditos.','er2');return;}
+  if((CP?.creditos||0)<1){toast('Você precisa de créditos para criar uma campanha.','er2');return;}
   document.getElementById('fPA').innerHTML='';ARQ=null;OM('mUp');
 }
 function pvArq(inp){
@@ -447,7 +509,7 @@ async function envCamp(){
   const qtd=parseInt(document.getElementById('cQt').value)||0;
   const msg=document.getElementById('cMs').value.trim();
   if(!nome){toast('Informe o nome.','er2');return;}
-  if(qtd<10000){toast('Mínimo 10.000 disparos.','er2');return;}
+  if(qtd<1){toast('Informe a quantidade.','er2');return;}
   if(qtd>(CP?.creditos||0)){toast('Créditos insuficientes.','er2');return;}
   if(!msg){toast('Informe a mensagem.','er2');return;}
   if(!ARQ){toast('Faça o upload da lista.','er2');return;}
@@ -465,6 +527,7 @@ async function envCamp(){
   toast(`✓ Campanha "${nome}" enviada!`,'ok');loadC();
 }
 
+// DADOS CLIENTE
 async function loadC(){
   const{data:pf}=await sb.from('perfis').select('*').eq('id',CU.id).single();
   if(pf)CP=pf;
@@ -474,7 +537,7 @@ async function loadC(){
   document.getElementById('mDi').textContent=ca.filter(c=>c.status==='disparado').length;
   document.getElementById('mEn').textContent=ca.reduce((s,c)=>s+c.entregues,0).toLocaleString('pt-BR');
   document.getElementById('mAn').textContent=ca.filter(c=>c.status==='aguardando').length;
-  document.getElementById('CBF').style.width=Math.min(100,(cr/Math.max(cr,30000))*100)+'%';
+  document.getElementById('CBF').style.width=Math.min(100,(cr/Math.max(cr,50000))*100)+'%';
   document.getElementById('CBC').innerHTML=`${cr.toLocaleString('pt-BR')} <span>msgs</span>`;
   document.getElementById('crBd').textContent=`${cr.toLocaleString('pt-BR')} créditos`;
   rKC(ca);rTC(ca);
@@ -494,6 +557,7 @@ function rTC(cs){
   tb.innerHTML=cs.map(c=>`<tr><td><strong>${c.nome}</strong></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.entregues?c.entregues.toLocaleString('pt-BR'):'—'}</td><td>${c.arquivo_nome?`<span style="font-size:11px">📎 ${c.arquivo_nome}</span>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td></tr>`).join('');
 }
 
+// DADOS ADMIN
 async function loadA(){
   const{data:cs}=await sb.from('campanhas').select('*').order('criado_em',{ascending:false});
   const{data:cl}=await sb.from('perfis').select('*').eq('papel','cliente');
@@ -509,7 +573,7 @@ function rAK(cs){
   [['aguardando','akA','akBA'],['disparando','akD','akBD'],['disparado','akF','akBF']].forEach(([s,kn,kb])=>{
     const l=cs.filter(c=>c.status===s);
     document.getElementById(kn).textContent=l.length;
-    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kk"><div class="kkn">${c.nome}</div><div style="font-size:11px;color:var(--mu);margin-bottom:5px">👤 ${c.cliente_nome||'Cliente'}</div><div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:10px">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:12px;color:var(--mu);margin-bottom:7px">${c.quantidade.toLocaleString('pt-BR')} disparos</div>${c.arquivo_url?`<div style="margin-bottom:7px"><button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar lista</button></div>`:''}<div class="kkf"><span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span><div style="display:flex;gap:5px;flex-wrap:wrap;">${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button><button class="bs bsm" style="font-size:10px;padding:5px 9px;" onclick="abrirCP('${c.cliente_id}','${(c.cliente_nome||'Cliente').replace(/'/g,"\\'")}','${c.nome.replace(/'/g,"\\'")}')">💰 PIX</button>`:''} ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}</div></div></div>`).join('');
+    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kk"><div class="kkn">${c.nome}</div><div style="font-size:11px;color:var(--mu);margin-bottom:5px">👤 ${c.cliente_nome||'Cliente'}</div><div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:10px">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:12px;color:var(--mu);margin-bottom:7px">${c.quantidade.toLocaleString('pt-BR')} disparos</div>${c.arquivo_url?`<div style="margin-bottom:7px"><button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar lista</button></div>`:''}<div class="kkf"><span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span><div style="display:flex;gap:5px;">${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}</div></div></div>`).join('');
   });
 }
 
@@ -518,7 +582,6 @@ async function iniciar(id){
   toast('Campanha iniciada!','ok');loadA();
 }
 
-let disId=null;
 function abrirDis(id,nome,qtd){
   disId=id;
   document.getElementById('mDisS').textContent=`"${nome}" — ${qtd.toLocaleString('pt-BR')} disparos.`;
@@ -532,34 +595,71 @@ async function confDis(){
   FM('mDis');toast('✓ Campanha marcada como disparada!','ok');loadA();
 }
 
-let cpData=null;
-function abrirCP(cid,cnome,camp){
-  cpData={cid,cnome,camp};
-  document.getElementById('mCPI').innerHTML=`<strong>Cliente:</strong> ${cnome}<br><strong>Campanha:</strong> ${camp}<br><strong>Ação:</strong> Liberar créditos após confirmar PIX recebido no C6`;
-  OM('mCP');
-}
-async function confPix(){
-  if(!cpData)return;
-  const b=document.getElementById('bCP');b.disabled=true;b.textContent='Liberando...';
-  const h={'apikey':SBK,'Authorization':`Bearer ${SBK}`,'Content-Type':'application/json'};
-  const pr=await fetch(`${SBU}/rest/v1/perfis?id=eq.${cpData.cid}&select=creditos`,{headers:h});
-  const pf=await pr.json();
-  const msgs=30000;
-  await fetch(`${SBU}/rest/v1/perfis?id=eq.${cpData.cid}`,{method:'PATCH',headers:h,body:JSON.stringify({creditos:(pf[0]?.creditos||0)+msgs})});
-  await fetch(`${SBU}/rest/v1/transacoes`,{method:'POST',headers:h,body:JSON.stringify({cliente_id:cpData.cid,quantidade:msgs,descricao:`PIX C6 confirmado pelo admin — ${cpData.camp}`})});
-  b.disabled=false;b.textContent='✓ Confirmar e liberar créditos';
-  FM('mCP');toast(`✓ Créditos liberados para ${cpData.cnome}!`,'ok');loadA();
-}
-
 function rAT(cs){
   const l=FA2==='todas'?cs:cs.filter(c=>c.status===FA2);
   const tb=document.getElementById('aTb');
   if(!l.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--mu);padding:28px">Nenhuma campanha.</td></tr>';return;}
-  tb.innerHTML=l.map(c=>`<tr><td>${c.cliente_nome||'—'}</td><td><strong>${c.nome}</strong></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.arquivo_url?`<button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar</button>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td><td>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button> <button class="bs bsm" style="font-size:11px;" onclick="abrirCP('${c.cliente_id}','${(c.cliente_nome||'Cliente').replace(/'/g,"\\'")}','${c.nome.replace(/'/g,"\\'")}')">💰 PIX</button>`:''} ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''} ${c.status==='disparado'?`<span style="font-size:12px;color:var(--g);font-weight:600">✓ ${c.entregues.toLocaleString('pt-BR')}</span>`:''}</td></tr>`).join('');
+  tb.innerHTML=l.map(c=>`<tr><td>${c.cliente_nome||'—'}</td><td><strong>${c.nome}</strong></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.arquivo_url?`<button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar</button>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td><td>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''} ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''} ${c.status==='disparado'?`<span style="font-size:12px;color:var(--g);font-weight:600">✓ ${c.entregues.toLocaleString('pt-BR')}</span>`:''}</td></tr>`).join('');
 }
 
 function FA(f,b2){
   FA2=f;document.querySelectorAll('#ta-f .tab').forEach(t=>t.classList.remove('on'));b2.classList.add('on');loadA();
+}
+
+// PAGAMENTOS ADMIN
+async function loadPagamentos(){
+  const{data:ts}=await sb.from('transacoes').select('*,perfis(nome)').ilike('descricao','PIX pendente%').order('criado_em',{ascending:false});
+  const tb=document.getElementById('pgTb');
+  if(!ts||!ts.length){
+    tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:40px"><div style="font-size:32px;margin-bottom:8px">💤</div><div>Nenhum comprovante enviado ainda.</div></td></tr>';
+    return;
+  }
+  tb.innerHTML=ts.map(t=>{
+    const desc=t.descricao||'';
+    const jaLiberado=desc.includes('confirmado');
+    const valorMatch=desc.match(/R\$ ([\d.,]+)/);
+    const valor=valorMatch?'R$ '+valorMatch[1]:'—';
+    const compMatch=desc.match(/comprovante: (.+)/);
+    const comp=compMatch?compMatch[1]:null;
+    const ehSimulado=comp&&comp.includes('simulado');
+    const statusBadge=jaLiberado
+      ?'<span class="bd bg">✓ Liberado</span>'
+      :'<span class="bd ba">⏳ Pendente</span>';
+    return `<tr style="${jaLiberado?'opacity:.6':''}">
+      <td>
+        <div style="font-weight:600;font-size:14px;color:var(--td)">${t.perfis?.nome||'—'}</div>
+        <div style="font-size:11px;color:var(--mu)">${t.cliente_id}</div>
+      </td>
+      <td><span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t)">${valor}</span></td>
+      <td><span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--td)">${(t.quantidade||0).toLocaleString('pt-BR')}</span><div style="font-size:11px;color:var(--mu)">mensagens</div></td>
+      <td>${ehSimulado?'<span style="font-size:12px;color:var(--mu)">🧪 Simulado (teste)</span>':comp?`<button class="bd2" onclick="dlArq('${comp}','comprovante')">⬇ Ver comprovante</button>`:'—'}</td>
+      <td>${new Date(t.criado_em).toLocaleDateString('pt-BR')}<div style="font-size:11px;color:var(--mu)">${new Date(t.criado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></td>
+      <td>${statusBadge}</td>
+      <td>${!jaLiberado?`<button class="bs" style="padding:10px 18px;font-size:13px;white-space:nowrap;" onclick="abrirLib('${t.cliente_id}','${(t.perfis?.nome||'Cliente').replace(/'/g,"\\'")}',${t.quantidade||0},${t.id})">✓ Liberar créditos</button>`:'<span style="font-size:12px;color:var(--g)">✓ Concluído</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirLib(cid,cnome,msgs,tid){
+  libData={cid,cnome,msgs,tid};
+  document.getElementById('mLibS').textContent=`Liberar créditos para ${cnome}`;
+  document.getElementById('mLibI').innerHTML=`<strong>Cliente:</strong> ${cnome}<br><strong>Mensagens solicitadas:</strong> ${msgs.toLocaleString('pt-BR')}`;
+  document.getElementById('libQtd').value=msgs;
+  OM('mLib');
+}
+async function liberarCreditos(){
+  if(!libData)return;
+  const b=document.getElementById('bLib');b.disabled=true;b.textContent='Liberando...';
+  const qtd=parseInt(document.getElementById('libQtd').value)||0;
+  if(qtd<1){toast('Informe a quantidade.','er2');b.disabled=false;b.textContent='✓ Confirmar e liberar créditos';return;}
+  const h={'apikey':SBK,'Authorization':`Bearer ${SBK}`,'Content-Type':'application/json'};
+  const pr=await fetch(`${SBU}/rest/v1/perfis?id=eq.${libData.cid}&select=creditos`,{headers:h});
+  const pf=await pr.json();
+  await fetch(`${SBU}/rest/v1/perfis?id=eq.${libData.cid}`,{method:'PATCH',headers:h,body:JSON.stringify({creditos:(pf[0]?.creditos||0)+qtd})});
+  await fetch(`${SBU}/rest/v1/transacoes?id=eq.${libData.tid}`,{method:'PATCH',headers:h,body:JSON.stringify({descricao:`PIX confirmado — ${qtd.toLocaleString('pt-BR')} créditos liberados para ${libData.cnome}`})});
+  b.disabled=false;b.textContent='✓ Confirmar e liberar créditos';
+  FM('mLib');toast(`✓ ${qtd.toLocaleString('pt-BR')} créditos liberados para ${libData.cnome}!`,'ok');
+  loadPagamentos();
 }
 
 async function dlArq(path,nome){
@@ -571,6 +671,18 @@ async function dlArq(path,nome){
 function OM(id){document.getElementById(id).classList.add('on');}
 function FM(id){document.getElementById(id).classList.remove('on');}
 document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
+
+async function simularPagamento(){
+  if(pagPend.msgs<1){toast('Selecione um pacote primeiro.','er2');return;}
+  const{error}=await sb.from('transacoes').insert({
+    cliente_id:CU.id,
+    quantidade:pagPend.msgs,
+    descricao:`PIX pendente — ${pagPend.label} — R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})} — comprovante: simulado/teste_${Date.now()}.jpg`
+  });
+  if(error){toast('Erro na simulação.','er2');return;}
+  FM('mPag');
+  toast('✓ Pagamento simulado! Veja no painel Admin → Pagamentos PIX.','ok');
+}
 
 function toast(msg,t=''){
   const el=document.createElement('div');el.className=`to ${t}`;el.innerHTML=`<span>${msg}</span>`;
