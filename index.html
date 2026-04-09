@@ -103,7 +103,7 @@ textarea{resize:vertical;}
 .uz:hover{border-color:var(--t);background:var(--tl);}
 .mo{display:none;position:fixed;inset:0;background:rgba(1,58,69,.55);z-index:100;align-items:center;justify-content:center;}
 .mo.on{display:flex;}
-.md{background:#fff;border-radius:16px;padding:32px;width:500px;max-width:95vw;box-shadow:0 32px 80px rgba(0,0,0,.25);animation:fu .3s ease;max-height:90vh;overflow-y:auto;}
+.md{background:#fff;border-radius:16px;padding:32px;width:560px;max-width:95vw;box-shadow:0 32px 80px rgba(0,0,0,.25);animation:fu .3s ease;max-height:90vh;overflow-y:auto;}
 .mdt{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:var(--td);margin-bottom:6px;}
 .mds{font-size:13px;color:var(--mu);margin-bottom:20px;}
 .mda{display:flex;gap:9px;margin-top:20px;justify-content:flex-end;}
@@ -132,9 +132,14 @@ textarea{resize:vertical;}
 @keyframes ld{0%{width:0}100%{width:100%}}
 .bd2{padding:5px 11px;background:var(--bl);color:var(--b);border:1px solid var(--b);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:4px;text-decoration:none;}
 .bd2:hover{background:var(--b);color:#fff;}
+.bd3{padding:5px 11px;background:var(--gl);color:var(--gd);border:1px solid var(--gd);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:4px;text-decoration:none;}
+.bd3:hover{background:var(--gd);color:#fff;}
 .pix-info{background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:16px;}
 .pix-chave{background:#fff;border:1.5px solid var(--t);border-radius:8px;padding:14px;text-align:center;margin-bottom:14px;}
 .tag-desc{background:#EAF3DE;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;color:#27500A;display:inline-block;margin-left:6px;}
+.msg-box{background:var(--of);border:1px solid var(--br);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--tx);line-height:1.6;margin-bottom:8px;white-space:pre-wrap;}
+.img-prev{max-width:100%;max-height:200px;border-radius:8px;border:1px solid var(--br);margin-top:8px;}
+.down-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -145,7 +150,7 @@ textarea{resize:vertical;}
 <div class="mo" id="mPag">
   <div class="md">
     <div class="mdt">Pagamento via PIX — LeadIT</div>
-    <div class="mds" id="mPagSub">Realize o PIX para a conta abaixo e envie o comprovante.</div>
+    <div class="mds">Realize o PIX e envie o comprovante para liberar seus créditos.</div>
     <div class="pix-info">
       <strong>Favorecido:</strong> LEADIT COMPANY LTDA<br>
       <strong>Banco:</strong> C6 Bank (336)<br>
@@ -154,11 +159,11 @@ textarea{resize:vertical;}
     </div>
     <div class="pix-chave">
       <div style="font-size:11px;color:var(--mu);margin-bottom:6px;">CHAVE PIX (CNPJ)</div>
-      <div style="font-family:monospace;font-size:16px;font-weight:600;color:var(--td);margin-bottom:10px;">57.567.942/0001-73</div>
+      <div style="font-family:monospace;font-size:18px;font-weight:700;color:var(--td);margin-bottom:10px;">57.567.942/0001-73</div>
       <button class="bs" style="width:100%;" onclick="cpChave()">📋 Copiar chave PIX</button>
     </div>
     <div class="fg">
-      <label>Comprovante de pagamento</label>
+      <label>Comprovante de pagamento (imagem ou PDF)</label>
       <input type="file" id="compArq" accept="image/*,.pdf" style="padding:10px;" onchange="pvComp(this)">
       <div id="compPrev"></div>
     </div>
@@ -167,7 +172,6 @@ textarea{resize:vertical;}
     </div>
     <button class="bs" id="bEnvComp" style="width:100%;margin-bottom:8px;" onclick="enviarComprovante()">📤 Enviar comprovante</button>
     <button class="bc" style="width:100%;" onclick="FM('mPag')">Fechar</button>
-
   </div>
 </div>
 
@@ -175,25 +179,41 @@ textarea{resize:vertical;}
 <div class="mo" id="mUp">
   <div class="md">
     <div class="mdt">Nova campanha de disparos</div>
-    <div class="mds">Preencha os dados e faça o upload da lista de contatos.</div>
+    <div class="mds">Preencha todos os dados abaixo para enviar sua campanha.</div>
     <div class="fg"><label>Nome da campanha</label><input type="text" id="cNo" placeholder="Ex: Campanha INSS Maio 2025"></div>
-    <div class="fg"><label>Quantidade de disparos</label><input type="number" id="cQt" placeholder="Mínimo 1 mensagem" min="1"></div>
-    <div class="fg"><label>Mensagem</label><textarea id="cMs" rows="3" placeholder="Mensagem que será enviada..."></textarea></div>
-    <div class="fg"><label>Lista de contatos (CSV, XLSX, TXT)</label>
-    <input type="file" id="cAr" accept=".csv,.xlsx,.xls,.txt" style="padding:10px;" onchange="pvArq(this)">
-    <div id="fPA"></div></div>
+    <div class="fg">
+      <label>Mensagem do disparo</label>
+      <textarea id="cMs" rows="4" placeholder="Digite aqui o texto que será enviado junto com a imagem..."></textarea>
+    </div>
+    <div class="fg">
+      <label>Imagem do disparo (JPG, PNG — obrigatório)</label>
+      <input type="file" id="cImg" accept="image/jpeg,image/png,image/jpg" style="padding:10px;" onchange="pvImg(this)">
+      <div id="fPI"></div>
+    </div>
+    <div class="fg">
+      <label>Lista de contatos (CSV, XLSX, TXT)</label>
+      <input type="file" id="cAr" accept=".csv,.xlsx,.xls,.txt" style="padding:10px;" onchange="pvArq(this)">
+      <div id="fPA"></div>
+    </div>
+    <div style="background:var(--tl);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--td);margin-bottom:4px;">
+      ℹ️ Os créditos serão descontados apenas após o disparo, com base nas mensagens efetivamente entregues.
+    </div>
     <div class="mda"><button class="bc" onclick="FM('mUp')">Cancelar</button><button class="bs" id="bEC" onclick="envCamp()">📤 Enviar campanha</button></div>
   </div>
 </div>
 
-<!-- MODAL DISPARADO -->
+<!-- MODAL DISPARADO + CONSUMO DE CRÉDITOS -->
 <div class="mo" id="mDis">
   <div class="md">
-    <div class="mdt">Confirmar disparo realizado</div>
+    <div class="mdt">Registrar disparo realizado</div>
     <div class="mds" id="mDisS"></div>
-    <div class="fg"><label>Mensagens entregues</label><input type="number" id="qEn" placeholder="Ex: 14.850"></div>
-    <div class="fg"><label>Observações (opcional)</label><textarea id="oDi" rows="2" placeholder="Taxa de entrega..."></textarea></div>
-    <div class="mda"><button class="bc" onclick="FM('mDis')">Cancelar</button><button class="bs" id="bCD" onclick="confDis()">✓ Marcar como disparado</button></div>
+    <div class="fg">
+      <label>Mensagens efetivamente entregues</label>
+      <input type="number" id="qEn" placeholder="Ex: 14.850" min="0">
+      <div style="font-size:11px;color:var(--mu);margin-top:6px;">Este valor será descontado dos créditos do cliente.</div>
+    </div>
+    <div class="fg"><label>Observações (opcional)</label><textarea id="oDi" rows="2" placeholder="Taxa de entrega, observações..."></textarea></div>
+    <div class="mda"><button class="bc" onclick="FM('mDis')">Cancelar</button><button class="bs" id="bCD" onclick="confDis()">✓ Confirmar e descontar créditos</button></div>
   </div>
 </div>
 
@@ -201,10 +221,12 @@ textarea{resize:vertical;}
 <div class="mo" id="mLib">
   <div class="md">
     <div class="mdt">Liberar créditos — PIX recebido</div>
-    <div class="mds" id="mLibS">Confirme o recebimento no C6 e libere os créditos.</div>
+    <div class="mds" id="mLibS"></div>
     <div id="mLibI" style="background:var(--of);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;margin-bottom:14px;"></div>
-    <div id="mLibComp" style="margin-bottom:14px;"></div>
-    <div class="fg"><label>Quantidade de créditos a liberar</label><input type="number" id="libQtd" placeholder="Ex: 15000" min="1"></div>
+    <div class="fg">
+      <label>Quantidade de créditos a liberar</label>
+      <input type="number" id="libQtd" placeholder="Ex: 50000" min="1">
+    </div>
     <div class="mda"><button class="bc" onclick="FM('mLib')">Cancelar</button><button class="bs" id="bLib" onclick="liberarCreditos()">✓ Confirmar e liberar créditos</button></div>
   </div>
 </div>
@@ -252,37 +274,33 @@ textarea{resize:vertical;}
       </div>
     </div>
 
-    <!-- COMPRAR CRÉDITOS -->
     <div id="tc-p" style="display:none">
       <div class="tb"><div class="tb-t">Comprar Créditos</div><div class="tb-a"><span class="bd bt" id="crBd">0 créditos</span></div></div>
       <div class="pg">
         <div class="st">Escolha o pacote</div>
         <div class="cg">
-          <!-- PACOTE 1: PERSONALIZADO -->
-          <div class="cc sel" id="pk0" onclick="selP(0)" style="grid-column:span 1">
+          <div class="cc sel" id="pk0" onclick="selP(0)">
             <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--td);margin-bottom:4px;">Personalizado</div>
             <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">R$ 0,45 por mensagem</div>
             <div class="fg" style="text-align:left;margin-bottom:0" onclick="event.stopPropagation()">
               <label>Quantidade de mensagens</label>
-              <input type="number" id="qtdPersonalizada" placeholder="Ex: 5000" min="1" style="margin-bottom:8px;" oninput="atualizarResPersonalizado()">
-              <div id="valorPersonalizado" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t);min-height:28px;"></div>
+              <input type="number" id="qtdP" placeholder="Ex: 5.000" min="1" style="margin-bottom:8px;" oninput="atualizarResP()">
+              <div id="valP" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t);min-height:28px;"></div>
             </div>
           </div>
-          <!-- PACOTE 2: 50k -->
           <div class="cc pop" id="pk1" onclick="selP(1)">
             <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--td);">50k</div>
             <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">mensagens</div>
             <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t);">R$ 21.000</div>
             <div style="font-size:11px;color:var(--mu);">R$ 0,42 por msg</div>
-            <div class="tag-desc">6% de desconto</div>
+            <div class="tag-desc">6% desconto</div>
           </div>
-          <!-- PACOTE 3: 100k -->
           <div class="cc" id="pk2" onclick="selP(2)">
             <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--td);">100k</div>
             <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">mensagens</div>
             <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t);">R$ 38.000</div>
             <div style="font-size:11px;color:var(--mu);">R$ 0,38 por msg</div>
-            <div class="tag-desc">16% de desconto</div>
+            <div class="tag-desc">16% desconto</div>
           </div>
         </div>
         <div style="background:#fff;border:1px solid var(--br);border-radius:12px;padding:22px;margin-bottom:14px;">
@@ -294,13 +312,16 @@ textarea{resize:vertical;}
       </div>
     </div>
 
-    <!-- CAMPANHAS -->
     <div id="tc-k" style="display:none">
       <div class="tb"><div class="tb-t">Minhas Campanhas</div><div class="tb-a"><button class="bs" style="padding:9px 16px;font-size:13px;" onclick="abrirUp()">📤 Nova campanha</button></div></div>
       <div class="pg">
-        <div class="uz" id="UZ" onclick="abrirUp()"><div style="font-size:44px;margin-bottom:10px">📋</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--td);margin-bottom:5px">Enviar lista de contatos</div><div style="font-size:13px;color:var(--mu)">Clique ou arraste CSV/XLSX — vai direto para a equipe Lead IT</div></div>
-        <div class="st">Histórico</div>
-        <div class="tw"><table class="dt"><thead><tr><th>Campanha</th><th>Disparos</th><th>Entregues</th><th>Arquivo</th><th>Data</th><th>Status</th></tr></thead><tbody id="cTb"></tbody></table></div>
+        <div class="uz" id="UZ" onclick="abrirUp()">
+          <div style="font-size:44px;margin-bottom:10px">📋</div>
+          <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--td);margin-bottom:5px">Enviar nova campanha</div>
+          <div style="font-size:13px;color:var(--mu)">Clique para enviar mensagem, imagem e lista de contatos</div>
+        </div>
+        <div class="st">Histórico de campanhas</div>
+        <div class="tw"><table class="dt"><thead><tr><th>Campanha</th><th>Mensagem</th><th>Entregues</th><th>Créditos usados</th><th>Data</th><th>Status</th></tr></thead><tbody id="cTb"></tbody></table></div>
       </div>
     </div>
   </div>
@@ -334,13 +355,15 @@ textarea{resize:vertical;}
         </div>
       </div>
     </div>
+
     <div id="ta-f" style="display:none">
       <div class="tb"><div class="tb-t">Fila de Campanhas</div></div>
       <div class="pg">
         <div class="tabs"><button class="tab on" onclick="FA('todas',this)">Todas</button><button class="tab" onclick="FA('aguardando',this)">Aguardando</button><button class="tab" onclick="FA('disparando',this)">Em disparo</button><button class="tab" onclick="FA('disparado',this)">Disparadas</button></div>
-        <div class="tw"><table class="dt"><thead><tr><th>Cliente</th><th>Campanha</th><th>Disparos</th><th>Arquivo</th><th>Data</th><th>Status</th><th>Ação</th></tr></thead><tbody id="aTb"></tbody></table></div>
+        <div class="tw"><table class="dt"><thead><tr><th>Cliente</th><th>Campanha + Mensagem</th><th>Downloads</th><th>Data</th><th>Status</th><th>Ação</th></tr></thead><tbody id="aTb"></tbody></table></div>
       </div>
     </div>
+
     <div id="ta-pg" style="display:none">
       <div class="tb"><div class="tb-t">Pagamentos PIX — Comprovantes</div></div>
       <div class="pg">
@@ -356,25 +379,20 @@ const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 const sb=supabase.createClient(SBU,SBK);
 const SL={aguardando:'Aguardando',disparando:'Em disparo',disparado:'Disparado'};
 const SC={aguardando:'ba',disparando:'bb',disparado:'bg'};
-const PKTS=[{label:'Personalizado',preco_unit:0.45},{label:'50.000 msgs',msgs:50000,preco:21000},{label:'100.000 msgs',msgs:100000,preco:38000}];
-let CU=null,CP=null,PS=0,SI=null,ARQ=null,COMP=null,disId=null,libData=null,FA2='todas';
+const PKTS=[{label:'Personalizado',pu:0.45},{label:'50.000 msgs',msgs:50000,preco:21000},{label:'100.000 msgs',msgs:100000,preco:38000}];
+const MIN_CAMP=3000;
+let CU=null,CP=null,PS=0,SI=null,ARQ=null,IMG=null,COMP=null,disId=null,disCid=null,disQtd=0,libData=null,FA2='todas';
 let pagPend={msgs:0,valor:0,label:''};
 
 window.addEventListener('load',async()=>{
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    if(session)await loadP(session.user);
-    else show('SL');
-  }catch(e){show('SL');}
+  try{const{data:{session}}=await sb.auth.getSession();if(session)await loadP(session.user);else show('SL');}catch(e){show('SL');}
   document.getElementById('LD').classList.add('hd');
 });
 
 async function loadP(u){
   const{data:p}=await sb.from('perfis').select('*').eq('id',u.id).single();
-  CU=u;CP=p;
-  if(p.papel==='cliente')entC();else entA();
+  CU=u;CP=p;if(p.papel==='cliente')entC();else entA();
 }
-
 function show(id){['SL','SC','SA'].forEach(x=>document.getElementById(x).classList.remove('on'));document.getElementById(id).classList.add('on');}
 
 async function login(){
@@ -420,23 +438,15 @@ function ST(s,t,el){
 // PACOTES
 function selP(i){
   PS=i;
-  ['pk0','pk1','pk2'].forEach((id,idx)=>{
-    document.getElementById(id).classList.toggle('sel',idx===i);
-  });
-  atualizarResumo();
+  ['pk0','pk1','pk2'].forEach((id,idx)=>document.getElementById(id).classList.toggle('sel',idx===i));
+  atualizarRes();
 }
-
-function atualizarResPersonalizado(){
-  const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
-  const v=(q*0.45).toLocaleString('pt-BR',{minimumFractionDigits:2});
-  document.getElementById('valorPersonalizado').textContent=q>0?`R$ ${v}`:'';
-  if(PS===0)atualizarResumo();
-}
-
-function atualizarResumo(){
+function atualizarResP(){if(PS===0)atualizarRes();}
+function atualizarRes(){
   if(PS===0){
-    const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
+    const q=parseInt(document.getElementById('qtdP').value)||0;
     const v=q*0.45;
+    document.getElementById('valP').textContent=q>0?`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`:'';
     document.getElementById('rPk').textContent='Personalizado';
     document.getElementById('rMs').textContent=q>0?q.toLocaleString('pt-BR')+' mensagens':'—';
     document.getElementById('rTt').textContent=q>0?`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`:'—';
@@ -451,22 +461,19 @@ function atualizarResumo(){
 }
 
 function abrirPag(){
-  if(PS===0){
-    const q=parseInt(document.getElementById('qtdPersonalizada').value)||0;
-    if(q<1){toast('Informe a quantidade de mensagens.','er2');return;}
-  }
-  atualizarResumo();
+  if(PS===0){const q=parseInt(document.getElementById('qtdP').value)||0;if(q<1){toast('Informe a quantidade de mensagens.','er2');return;}}
+  atualizarRes();
   if(pagPend.msgs<1||pagPend.valor<1){toast('Selecione um pacote válido.','er2');return;}
   document.getElementById('pVal').innerHTML=`<strong>Valor: R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong> — ${pagPend.msgs.toLocaleString('pt-BR')} mensagens`;
   document.getElementById('compPrev').innerHTML='';
   document.getElementById('compArq').value='';
-  COMP=null;
-  OM('mPag');
+  COMP=null;OM('mPag');
 }
 
 function cpChave(){
-  navigator.clipboard?.writeText('57.567.942/0001-73').then(()=>toast('Chave PIX copiada!','ok')).catch(()=>{
-    const el=document.createElement('input');el.value='57.567.942/0001-73';document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('Chave PIX copiada!','ok');
+  const chave='57.567.942/0001-73';
+  navigator.clipboard?.writeText(chave).then(()=>toast('Chave PIX copiada!','ok')).catch(()=>{
+    const el=document.createElement('input');el.value=chave;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('Chave PIX copiada!','ok');
   });
 }
 
@@ -476,52 +483,81 @@ function pvComp(inp){
 }
 
 async function enviarComprovante(){
-  if(!COMP){toast('Selecione o comprovante de pagamento.','er2');return;}
+  if(!COMP){toast('Selecione o comprovante.','er2');return;}
   const b=document.getElementById('bEnvComp');b.disabled=true;b.textContent='⏳ Enviando...';
   const nA=`comprovantes/${CU.id}/${Date.now()}_${COMP.name}`;
   const{data:ud,error:ue}=await sb.storage.from('listas').upload(nA,COMP);
   if(ue){toast('Erro ao enviar comprovante.','er2');b.disabled=false;b.textContent='📤 Enviar comprovante';return;}
-  const{error:pe}=await sb.from('transacoes').insert({
-    cliente_id:CU.id,
-    quantidade:pagPend.msgs,
-    descricao:`PIX pendente — ${pagPend.label} — R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})} — comprovante: ${ud.path}`
-  });
-  if(pe){toast('Erro ao registrar pagamento.','er2');b.disabled=false;b.textContent='📤 Enviar comprovante';return;}
+  await sb.from('transacoes').insert({cliente_id:CU.id,quantidade:pagPend.msgs,descricao:`PIX pendente — ${pagPend.label} — R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})} — comprovante: ${ud.path}`});
   b.disabled=false;b.textContent='📤 Enviar comprovante';
-  FM('mPag');
-  toast('✓ Comprovante enviado! Sua equipe irá conferir e liberar os créditos.','ok');
+  FM('mPag');toast('✓ Comprovante enviado! Créditos liberados em instantes.','ok');
 }
 
-// UPLOAD CAMPANHA
+// CAMPANHA
 function abrirUp(){
-  if((CP?.creditos||0)<1){toast('Você precisa de créditos para criar uma campanha.','er2');return;}
-  document.getElementById('fPA').innerHTML='';ARQ=null;OM('mUp');
+  if((CP?.creditos||0)<MIN_CAMP){toast(`Você precisa de pelo menos ${MIN_CAMP.toLocaleString('pt-BR')} créditos para criar uma campanha.`,'er2');return;}
+  document.getElementById('fPA').innerHTML='';
+  document.getElementById('fPI').innerHTML='';
+  document.getElementById('cNo').value='';
+  document.getElementById('cMs').value='';
+  document.getElementById('cAr').value='';
+  document.getElementById('cImg').value='';
+  ARQ=null;IMG=null;OM('mUp');
 }
+
 function pvArq(inp){
   ARQ=inp.files[0];if(!ARQ)return;
-  document.getElementById('fPA').innerHTML=`<div class="fp"><span style="font-size:22px">📄</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--td)">${ARQ.name}</div><div style="font-size:11px;color:var(--mu)">${(ARQ.size/1024).toFixed(1)} KB</div></div><span style="color:var(--g);font-size:18px">✓</span></div>`;
+  document.getElementById('fPA').innerHTML=`<div class="fp"><span style="font-size:22px">📋</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--td)">${ARQ.name}</div><div style="font-size:11px;color:var(--mu)">${(ARQ.size/1024).toFixed(1)} KB</div></div><span style="color:var(--g);font-size:18px">✓</span></div>`;
 }
+
+function pvImg(inp){
+  IMG=inp.files[0];if(!IMG)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('fPI').innerHTML=`<div class="fp"><span style="font-size:22px">🖼️</span><div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--td)">${IMG.name}</div><div style="font-size:11px;color:var(--mu)">${(IMG.size/1024).toFixed(1)} KB</div></div><span style="color:var(--g);font-size:18px">✓</span></div><img src="${e.target.result}" class="img-prev">`;
+  };
+  reader.readAsDataURL(IMG);
+}
+
 async function envCamp(){
   const nome=document.getElementById('cNo').value.trim();
-  const qtd=parseInt(document.getElementById('cQt').value)||0;
   const msg=document.getElementById('cMs').value.trim();
-  if(!nome){toast('Informe o nome.','er2');return;}
-  if(qtd<1){toast('Informe a quantidade.','er2');return;}
-  if(qtd>(CP?.creditos||0)){toast('Créditos insuficientes.','er2');return;}
-  if(!msg){toast('Informe a mensagem.','er2');return;}
-  if(!ARQ){toast('Faça o upload da lista.','er2');return;}
+  if(!nome){toast('Informe o nome da campanha.','er2');return;}
+  if(!msg){toast('Informe a mensagem do disparo.','er2');return;}
+  if(!IMG){toast('Anexe a imagem do disparo.','er2');return;}
+  if(!ARQ){toast('Faça o upload da lista de contatos.','er2');return;}
+  if((CP?.creditos||0)<MIN_CAMP){toast(`Mínimo de ${MIN_CAMP.toLocaleString('pt-BR')} créditos necessários.`,'er2');return;}
   const b=document.getElementById('bEC');b.disabled=true;b.textContent='⏳ Enviando...';
-  const nA=`${CU.id}/${Date.now()}_${ARQ.name}`;
-  const{data:ud,error:ue}=await sb.storage.from('listas').upload(nA,ARQ);
-  if(ue){toast('Erro ao enviar arquivo.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
-  const nc=(CP.creditos||0)-qtd;
-  const{error:ce}=await sb.from('campanhas').insert({cliente_id:CU.id,cliente_nome:CP.nome,nome,mensagem:msg,quantidade:qtd,status:'aguardando',arquivo_nome:ARQ.name,arquivo_url:ud.path});
+
+  // Upload imagem
+  const nImg=`imagens/${CU.id}/${Date.now()}_${IMG.name}`;
+  const{data:imgData,error:imgErr}=await sb.storage.from('listas').upload(nImg,IMG);
+  if(imgErr){toast('Erro ao enviar imagem.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
+
+  // Upload lista
+  const nArq=`${CU.id}/${Date.now()}_${ARQ.name}`;
+  const{data:arqData,error:arqErr}=await sb.storage.from('listas').upload(nArq,ARQ);
+  if(arqErr){toast('Erro ao enviar lista.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
+
+  // Salvar campanha — SEM descontar créditos ainda
+  const{error:ce}=await sb.from('campanhas').insert({
+    cliente_id:CU.id,
+    cliente_nome:CP.nome,
+    nome,
+    mensagem:msg,
+    quantidade:0,
+    status:'aguardando',
+    arquivo_nome:ARQ.name,
+    arquivo_url:arqData.path,
+    imagem_nome:IMG.name,
+    imagem_url:imgData.path,
+    entregues:0,
+  });
   if(ce){toast('Erro ao criar campanha.','er2');b.disabled=false;b.textContent='📤 Enviar campanha';return;}
-  await sb.from('perfis').update({creditos:nc}).eq('id',CU.id);CP.creditos=nc;
+
   b.disabled=false;b.textContent='📤 Enviar campanha';FM('mUp');
-  ['cNo','cQt','cMs','cAr'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fPA').innerHTML='';ARQ=null;
-  toast(`✓ Campanha "${nome}" enviada!`,'ok');loadC();
+  toast(`✓ Campanha "${nome}" enviada! Créditos serão descontados após o disparo.`,'ok');
+  loadC();
 }
 
 // DADOS CLIENTE
@@ -532,7 +568,7 @@ async function loadC(){
   const cr=CP?.creditos||0,ca=cs||[];
   document.getElementById('mCr').textContent=cr.toLocaleString('pt-BR');
   document.getElementById('mDi').textContent=ca.filter(c=>c.status==='disparado').length;
-  document.getElementById('mEn').textContent=ca.reduce((s,c)=>s+c.entregues,0).toLocaleString('pt-BR');
+  document.getElementById('mEn').textContent=ca.reduce((s,c)=>s+(c.entregues||0),0).toLocaleString('pt-BR');
   document.getElementById('mAn').textContent=ca.filter(c=>c.status==='aguardando').length;
   document.getElementById('CBF').style.width=Math.min(100,(cr/Math.max(cr,50000))*100)+'%';
   document.getElementById('CBC').innerHTML=`${cr.toLocaleString('pt-BR')} <span>msgs</span>`;
@@ -544,14 +580,29 @@ function rKC(cs){
   [['aguardando','kA','kBA'],['disparando','kD','kBD'],['disparado','kF','kBF']].forEach(([s,kn,kb])=>{
     const l=cs.filter(c=>c.status===s);
     document.getElementById(kn).textContent=l.length;
-    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kk"><div class="kkn">${c.nome}</div><div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:10px">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:12px;color:var(--mu)">${c.quantidade.toLocaleString('pt-BR')} disparos${c.entregues?` · ${c.entregues.toLocaleString('pt-BR')} entregues`:''}</div>${c.observacao?`<div style="font-size:11px;color:var(--mu);font-style:italic;margin-top:4px">${c.observacao}</div>`:''}<div class="kkf"><span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span></div></div>`).join('');
+    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`
+      <div class="kk">
+        <div class="kkn">${c.nome}</div>
+        <div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span></div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">${c.mensagem?c.mensagem.substring(0,60)+'...':''}</div>
+        ${c.entregues?`<div style="font-size:12px;color:var(--gd);font-weight:600;">✓ ${c.entregues.toLocaleString('pt-BR')} mensagens entregues</div>`:''}
+        ${c.observacao?`<div style="font-size:11px;color:var(--mu);font-style:italic;">${c.observacao}</div>`:''}
+        <div class="kkf"><span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span></div>
+      </div>`).join('');
   });
 }
 
 function rTC(cs){
   const tb=document.getElementById('cTb');
   if(!cs.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:28px">Nenhuma campanha ainda.</td></tr>';return;}
-  tb.innerHTML=cs.map(c=>`<tr><td><strong>${c.nome}</strong></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.entregues?c.entregues.toLocaleString('pt-BR'):'—'}</td><td>${c.arquivo_nome?`<span style="font-size:11px">📎 ${c.arquivo_nome}</span>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td></tr>`).join('');
+  tb.innerHTML=cs.map(c=>`<tr>
+    <td><strong>${c.nome}</strong><div style="font-size:11px;color:var(--mu)">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</div></td>
+    <td style="max-width:200px;"><div style="font-size:12px;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.mensagem||'—'}</div></td>
+    <td>${c.entregues?c.entregues.toLocaleString('pt-BR'):'Aguardando'}</td>
+    <td>${c.entregues?c.entregues.toLocaleString('pt-BR')+' créditos':'—'}</td>
+    <td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td>
+    <td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td>
+  </tr>`).join('');
 }
 
 // DADOS ADMIN
@@ -562,7 +613,7 @@ async function loadA(){
   document.getElementById('aMC').textContent=(cl||[]).length;
   document.getElementById('aMA').textContent=ca.filter(c=>c.status==='aguardando').length;
   document.getElementById('aMD').textContent=ca.filter(c=>c.status==='disparado').length;
-  document.getElementById('aME').textContent=ca.reduce((s,c)=>s+c.entregues,0).toLocaleString('pt-BR');
+  document.getElementById('aME').textContent=ca.reduce((s,c)=>s+(c.entregues||0),0).toLocaleString('pt-BR');
   rAK(ca);rAT(ca);
 }
 
@@ -570,7 +621,24 @@ function rAK(cs){
   [['aguardando','akA','akBA'],['disparando','akD','akBD'],['disparado','akF','akBF']].forEach(([s,kn,kb])=>{
     const l=cs.filter(c=>c.status===s);
     document.getElementById(kn).textContent=l.length;
-    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`<div class="kk"><div class="kkn">${c.nome}</div><div style="font-size:11px;color:var(--mu);margin-bottom:5px">👤 ${c.cliente_nome||'Cliente'}</div><div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span>${c.arquivo_nome?`<span style="font-size:10px">📎 ${c.arquivo_nome}</span>`:''}</div><div style="font-size:12px;color:var(--mu);margin-bottom:7px">${c.quantidade.toLocaleString('pt-BR')} disparos</div>${c.arquivo_url?`<div style="margin-bottom:7px"><button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar lista</button></div>`:''}<div class="kkf"><span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span><div style="display:flex;gap:5px;">${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''}</div></div></div>`).join('');
+    document.getElementById(kb).innerHTML=l.length===0?`<div class="ke">Nenhuma campanha</div>`:l.map(c=>`
+      <div class="kk">
+        <div class="kkn">${c.nome}</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:5px">👤 ${c.cliente_nome||'Cliente'}</div>
+        <div class="kkm"><span class="bd ${SC[c.status]}">${SL[c.status]}</span></div>
+        <div class="msg-box" style="font-size:12px;margin-bottom:8px;">${c.mensagem||'—'}</div>
+        <div class="down-group">
+          ${c.imagem_url?`<button class="bd3" onclick="dlArq('${c.imagem_url}','${c.imagem_nome||'imagem'}')">🖼️ Baixar imagem</button>`:''}
+          ${c.arquivo_url?`<button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">📋 Baixar lista</button>`:''}
+        </div>
+        <div class="kkf">
+          <span class="kkd">${new Date(c.criado_em).toLocaleDateString('pt-BR')}</span>
+          <div style="display:flex;gap:5px;">
+            ${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}
+            ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade||0},'${c.cliente_id}')">✓ Registrar entrega</button>`:''}
+          </div>
+        </div>
+      </div>`).join('');
   });
 }
 
@@ -579,24 +647,59 @@ async function iniciar(id){
   toast('Campanha iniciada!','ok');loadA();
 }
 
-function abrirDis(id,nome,qtd){
-  disId=id;
-  document.getElementById('mDisS').textContent=`"${nome}" — ${qtd.toLocaleString('pt-BR')} disparos.`;
+function abrirDis(id,nome,qtd,cid){
+  disId=id;disCid=cid;disQtd=qtd;
+  document.getElementById('mDisS').textContent=`"${nome}" — Informe quantas mensagens foram efetivamente entregues.`;
   document.getElementById('qEn').value='';document.getElementById('oDi').value='';
   OM('mDis');
 }
+
 async function confDis(){
   const b=document.getElementById('bCD');b.disabled=true;b.textContent='Salvando...';
-  await sb.from('campanhas').update({status:'disparado',entregues:parseInt(document.getElementById('qEn').value)||0,observacao:document.getElementById('oDi').value}).eq('id',disId);
-  b.disabled=false;b.textContent='✓ Marcar como disparado';
-  FM('mDis');toast('✓ Campanha marcada como disparada!','ok');loadA();
+  const entregues=parseInt(document.getElementById('qEn').value)||0;
+  const obs=document.getElementById('oDi').value;
+  if(entregues<1){toast('Informe a quantidade entregue.','er2');b.disabled=false;b.textContent='✓ Confirmar e descontar créditos';return;}
+
+  // Atualizar campanha
+  await sb.from('campanhas').update({status:'disparado',entregues,quantidade:entregues,observacao:obs}).eq('id',disId);
+
+  // Descontar créditos do cliente com base nas mensagens entregues
+  const h={'apikey':SBK,'Authorization':`Bearer ${SBK}`,'Content-Type':'application/json'};
+  const pr=await fetch(`${SBU}/rest/v1/perfis?id=eq.${disCid}&select=creditos,nome`,{headers:h});
+  const pf=await pr.json();
+  const atual=pf[0]?.creditos||0;
+  const novo=Math.max(0,atual-entregues);
+  await fetch(`${SBU}/rest/v1/perfis?id=eq.${disCid}`,{method:'PATCH',headers:h,body:JSON.stringify({creditos:novo})});
+  await fetch(`${SBU}/rest/v1/transacoes`,{method:'POST',headers:h,body:JSON.stringify({cliente_id:disCid,quantidade:-entregues,descricao:`Disparo realizado — ${entregues.toLocaleString('pt-BR')} mensagens entregues`})});
+
+  b.disabled=false;b.textContent='✓ Confirmar e descontar créditos';
+  FM('mDis');toast(`✓ ${entregues.toLocaleString('pt-BR')} créditos descontados do cliente.`,'ok');loadA();
 }
 
 function rAT(cs){
   const l=FA2==='todas'?cs:cs.filter(c=>c.status===FA2);
   const tb=document.getElementById('aTb');
-  if(!l.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--mu);padding:28px">Nenhuma campanha.</td></tr>';return;}
-  tb.innerHTML=l.map(c=>`<tr><td>${c.cliente_nome||'—'}</td><td><strong>${c.nome}</strong></td><td>${c.quantidade.toLocaleString('pt-BR')}</td><td>${c.arquivo_url?`<button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">⬇ Baixar</button>`:'—'}</td><td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td><td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td><td>${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''} ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade})">✓ Disparado</button>`:''} ${c.status==='disparado'?`<span style="font-size:12px;color:var(--g);font-weight:600">✓ ${c.entregues.toLocaleString('pt-BR')}</span>`:''}</td></tr>`).join('');
+  if(!l.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:28px">Nenhuma campanha.</td></tr>';return;}
+  tb.innerHTML=l.map(c=>`<tr>
+    <td><strong>${c.cliente_nome||'—'}</strong></td>
+    <td>
+      <strong>${c.nome}</strong>
+      <div class="msg-box" style="margin-top:6px;font-size:12px;">${c.mensagem||'—'}</div>
+    </td>
+    <td>
+      <div class="down-group">
+        ${c.imagem_url?`<button class="bd3" onclick="dlArq('${c.imagem_url}','${c.imagem_nome||'imagem'}')">🖼️ Imagem</button>`:'—'}
+        ${c.arquivo_url?`<button class="bd2" onclick="dlArq('${c.arquivo_url}','${c.arquivo_nome||'lista'}')">📋 Lista</button>`:''}
+      </div>
+    </td>
+    <td>${new Date(c.criado_em).toLocaleDateString('pt-BR')}</td>
+    <td><span class="bd ${SC[c.status]}">${SL[c.status]}</span></td>
+    <td>
+      ${c.status==='aguardando'?`<button class="bo bsm" onclick="iniciar(${c.id})">▶ Iniciar</button>`:''}
+      ${c.status==='disparando'?`<button class="bs bsm" onclick="abrirDis(${c.id},'${c.nome.replace(/'/g,"\\'")}',${c.quantidade||0},'${c.cliente_id}')">✓ Registrar entrega</button>`:''}
+      ${c.status==='disparado'?`<span style="font-size:12px;color:var(--g);font-weight:600;">✓ ${(c.entregues||0).toLocaleString('pt-BR')} entregues</span>`:''}
+    </td>
+  </tr>`).join('');
 }
 
 function FA(f,b2){
@@ -607,32 +710,22 @@ function FA(f,b2){
 async function loadPagamentos(){
   const{data:ts}=await sb.from('transacoes').select('*,perfis(nome)').ilike('descricao','PIX pendente%').order('criado_em',{ascending:false});
   const tb=document.getElementById('pgTb');
-  if(!ts||!ts.length){
-    tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:40px"><div style="font-size:32px;margin-bottom:8px">💤</div><div>Nenhum comprovante enviado ainda.</div></td></tr>';
-    return;
-  }
+  if(!ts||!ts.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--mu);padding:40px"><div style="font-size:32px;margin-bottom:8px">💤</div><div>Nenhum comprovante enviado ainda.</div></td></tr>';return;}
   tb.innerHTML=ts.map(t=>{
     const desc=t.descricao||'';
-    const jaLiberado=desc.includes('confirmado');
-    const valorMatch=desc.match(/R\$ ([\d.,]+)/);
-    const valor=valorMatch?'R$ '+valorMatch[1]:'—';
-    const compMatch=desc.match(/comprovante: (.+)/);
-    const comp=compMatch?compMatch[1]:null;
-    const ehSimulado=comp&&comp.includes('simulado');
-    const statusBadge=jaLiberado
-      ?'<span class="bd bg">✓ Liberado</span>'
-      :'<span class="bd ba">⏳ Pendente</span>';
-    return `<tr style="${jaLiberado?'opacity:.6':''}">
-      <td>
-        <div style="font-weight:600;font-size:14px;color:var(--td)">${t.perfis?.nome||'—'}</div>
-        <div style="font-size:11px;color:var(--mu)">${t.cliente_id}</div>
-      </td>
-      <td><span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t)">${valor}</span></td>
-      <td><span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--td)">${(t.quantidade||0).toLocaleString('pt-BR')}</span><div style="font-size:11px;color:var(--mu)">mensagens</div></td>
-      <td>${ehSimulado?'<span style="font-size:12px;color:var(--mu)">🧪 Simulado (teste)</span>':comp?`<button class="bd2" onclick="dlArq('${comp}','comprovante')">⬇ Ver comprovante</button>`:'—'}</td>
-      <td>${new Date(t.criado_em).toLocaleDateString('pt-BR')}<div style="font-size:11px;color:var(--mu)">${new Date(t.criado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></td>
-      <td>${statusBadge}</td>
-      <td>${!jaLiberado?`<button class="bs" style="padding:10px 18px;font-size:13px;white-space:nowrap;" onclick="abrirLib('${t.cliente_id}','${(t.perfis?.nome||'Cliente').replace(/'/g,"\\'")}',${t.quantidade||0},${t.id})">✓ Liberar créditos</button>`:'<span style="font-size:12px;color:var(--g)">✓ Concluído</span>'}</td>
+    const jaLib=desc.includes('confirmado');
+    const vMatch=desc.match(/R\$ ([\d.,]+)/);
+    const valor=vMatch?'R$ '+vMatch[1]:'—';
+    const cMatch=desc.match(/comprovante: (.+)/);
+    const comp=cMatch?cMatch[1]:null;
+    return `<tr style="${jaLib?'opacity:.6':''}">
+      <td><div style="font-weight:600;font-size:14px;">${t.perfis?.nome||'—'}</div></td>
+      <td><span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t);">${valor}</span></td>
+      <td><span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${(t.quantidade||0).toLocaleString('pt-BR')}</span><div style="font-size:11px;color:var(--mu);">mensagens</div></td>
+      <td>${comp?`<button class="bd2" onclick="dlArq('${comp}','comprovante')">⬇ Ver comprovante</button>`:'—'}</td>
+      <td>${new Date(t.criado_em).toLocaleDateString('pt-BR')}<div style="font-size:11px;color:var(--mu);">${new Date(t.criado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></td>
+      <td>${jaLib?'<span class="bd bg">✓ Liberado</span>':'<span class="bd ba">⏳ Pendente</span>'}</td>
+      <td>${!jaLib?`<button class="bs" style="padding:10px 18px;font-size:13px;" onclick="abrirLib('${t.cliente_id}','${(t.perfis?.nome||'Cliente').replace(/'/g,"\\'")}',${t.quantidade||0},${t.id})">✓ Liberar créditos</button>`:'<span style="font-size:12px;color:var(--g);">✓ Concluído</span>'}</td>
     </tr>`;
   }).join('');
 }
@@ -644,6 +737,7 @@ function abrirLib(cid,cnome,msgs,tid){
   document.getElementById('libQtd').value=msgs;
   OM('mLib');
 }
+
 async function liberarCreditos(){
   if(!libData)return;
   const b=document.getElementById('bLib');b.disabled=true;b.textContent='Liberando...';
@@ -661,7 +755,7 @@ async function liberarCreditos(){
 
 async function dlArq(path,nome){
   const{data,error}=await sb.storage.from('listas').download(path);
-  if(error){toast('Erro ao baixar.','er2');return;}
+  if(error){toast('Erro ao baixar arquivo.','er2');return;}
   const url=URL.createObjectURL(data);const a=document.createElement('a');a.href=url;a.download=nome;a.click();URL.revokeObjectURL(url);
 }
 
