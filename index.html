@@ -167,10 +167,7 @@ textarea{resize:vertical;}
     </div>
     <button class="bs" id="bEnvComp" style="width:100%;margin-bottom:8px;" onclick="enviarComprovante()">📤 Enviar comprovante</button>
     <button class="bc" style="width:100%;" onclick="FM('mPag')">Fechar</button>
-    <div style="margin-top:12px;border-top:1px dashed var(--br);padding-top:12px;text-align:center;">
-      <div style="font-size:11px;color:var(--mu);margin-bottom:8px;">🧪 Modo de teste — remover antes do lançamento</div>
-      <button onclick="simularPagamento()" style="background:var(--am);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:12px;font-weight:600;cursor:pointer;width:100%;">⚡ Simular pagamento (teste)</button>
-    </div>
+
   </div>
 </div>
 
@@ -671,18 +668,6 @@ async function dlArq(path,nome){
 function OM(id){document.getElementById(id).classList.add('on');}
 function FM(id){document.getElementById(id).classList.remove('on');}
 document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
-
-async function simularPagamento(){
-  if(pagPend.msgs<1){toast('Selecione um pacote primeiro.','er2');return;}
-  const{error}=await sb.from('transacoes').insert({
-    cliente_id:CU.id,
-    quantidade:pagPend.msgs,
-    descricao:`PIX pendente — ${pagPend.label} — R$ ${pagPend.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})} — comprovante: simulado/teste_${Date.now()}.jpg`
-  });
-  if(error){toast('Erro na simulação.','er2');return;}
-  FM('mPag');
-  toast('✓ Pagamento simulado! Veja no painel Admin → Pagamentos PIX.','ok');
-}
 
 function toast(msg,t=''){
   const el=document.createElement('div');el.className=`to ${t}`;el.innerHTML=`<span>${msg}</span>`;
